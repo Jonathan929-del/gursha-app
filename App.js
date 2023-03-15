@@ -1,20 +1,44 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+// Imports
+import Navbar from './components/Navbar';
+import {name as appName} from './app.json';
+import {AppRegistry, View} from 'react-native';
+import {NativeRouter} from "react-router-native";
+import {Provider as PaperProvider, MD3LightTheme as DefaultTheme} from 'react-native-paper';
 
+
+
+
+
+// Theme
+const theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#ff8c00',
+    secondary: 'yellow',
+  },
+};
+
+
+
+
+
+// Main Function
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <PaperProvider theme={theme}>
+      <NativeRouter>
+        <View style={{height:'100%'}}>
+          <Navbar theme={theme}/>
+        </View>
+      </NativeRouter>
+    </PaperProvider>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+
+
+
+
+// App Registry
+AppRegistry.registerComponent(appName, () => App);
