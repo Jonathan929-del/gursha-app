@@ -68,7 +68,7 @@ const Home = () => {
 const styles = StyleSheet.create({
   container:{
     backgroundColor:'#000',
-    height:Dimensions.get('screen').height - 50,
+    height:Dimensions.get('screen').height - 70
   },
   videoContainer:{
 

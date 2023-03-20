@@ -2,11 +2,11 @@
 import React from 'react';
 import Home from './Home';
 import Inbox from './Inbox';
+import Profile from './Profile';
+import AddVideo from './AddVideo';
 import {IconButton} from 'react-native-paper';
 import {View, StyleSheet, Text} from 'react-native';
 import {Route, Link, Routes} from 'react-router-native';
-import AddVideo from './AddVideo';
-import Profile from './Profile';
 
 
 
@@ -16,26 +16,25 @@ import Profile from './Profile';
 const Navbar = ({theme}) => {
     return (
         <View style={styles.container}>
-            {/* <View style={[styles.nav, {backgroundColor:theme.colors.primary}]}> */}
             <View style={styles.nav}>
-                <Link to="/" underlayColor="#f0f4f7" style={styles.navItem}>
+                <Link to="/" style={styles.navItem}>
                     <View style={styles.tabContainer}>
                         <IconButton icon='home' iconColor='#fff' size={30}/>
                         <Text style={styles.text}>Home</Text>
                     </View>
                 </Link>
-                <Link to="/add-video" underlayColor="#f0f4f7" style={styles.navItem}>
+                <Link to="/add-video" style={styles.navItem}>
                     <View style={styles.addVideoContainer}>
                         <Text style={styles.addVideoIcon}>+</Text>
                     </View>
                 </Link>
-                <Link to="/inbox" underlayColor="#f0f4f7" style={styles.navItem}>
+                <Link to="/inbox" style={styles.navItem}>
                     <View style={styles.tabContainer}>
                         <IconButton icon='message-text' iconColor='#fff' size={30} />
                         <Text style={styles.text}>Inbox</Text>
                     </View>
                 </Link>
-                <Link to="/profile" underlayColor="#f0f4f7" style={styles.navItem}>
+                <Link to="/profile" style={styles.navItem}>
                     <View style={styles.tabContainer}>
                         <IconButton icon='account' iconColor='#fff' size={30} />
                         <Text style={styles.text}>Profile</Text>
@@ -45,7 +44,7 @@ const Navbar = ({theme}) => {
             <Routes>
                 <Route exact path="/" element={<Home />} />
                 <Route path="/inbox" element={<Inbox />} />
-                <Route path="/add-video" element={<AddVideo />} />
+                <Route path="/add-video" element={<AddVideo theme={theme}/>} />
                 <Route path="/profile" element={<Profile />} />
             </Routes>
         </View>
@@ -114,3 +113,4 @@ const styles = StyleSheet.create({
 
 // Export
 export default Navbar
+// underlayColor="#f0f4f7"

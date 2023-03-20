@@ -1,8 +1,8 @@
 // Imports
 import Navbar from './components/Navbar';
 import {name as appName} from './app.json';
-import {AppRegistry, View} from 'react-native';
 import {NativeRouter} from "react-router-native";
+import {AppRegistry, View, StatusBar} from 'react-native';
 import {Provider as PaperProvider, MD3LightTheme as DefaultTheme} from 'react-native-paper';
 
 
@@ -25,9 +25,14 @@ const theme = {
 
 // Main Function
 export default function App() {
+
   return (
     <PaperProvider theme={theme}>
       <NativeRouter>
+        <StatusBar
+          backgroundColor='#000'
+          barStyle='light-content'
+        />
         <View style={{height:'100%'}}>
           <Navbar theme={theme}/>
         </View>
