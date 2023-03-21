@@ -30,11 +30,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "extra": {
-      "eas": {
-        "projectId": "8d024e1f-2462-4105-be80-d18f848f62b7"
-      }
-    },
     "plugins": [
       [
         "expo-image-picker",
@@ -46,8 +41,10 @@
     "runtimeVersion": {
       "policy": "sdkVersion"
     },
-    "updates": {
-      "url": "https://u.expo.dev/8d024e1f-2462-4105-be80-d18f848f62b7"
+    "extra": {
+      "eas": {
+        "projectId": "a182d029-897c-4754-ad76-fb1cff75da9a"
+      }
     }
   }
 }

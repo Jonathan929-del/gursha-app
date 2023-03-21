@@ -23,7 +23,7 @@ const Navbar = ({theme}) => {
                         <Text style={styles.text}>Home</Text>
                     </View>
                 </Link>
-                <Link to="/add-video" style={styles.navItem}>
+                <Link to="/add" style={styles.navItem}>
                     <View style={styles.addVideoContainer}>
                         <Text style={styles.addVideoIcon}>+</Text>
                     </View>
@@ -44,7 +44,7 @@ const Navbar = ({theme}) => {
             <Routes>
                 <Route exact path="/" element={<Home />} />
                 <Route path="/inbox" element={<Inbox />} />
-                <Route path="/add-video" element={<AddVideo theme={theme}/>} />
+                <Route path="/add" element={<AddVideo theme={theme}/>} />
                 <Route path="/profile" element={<Profile />} />
             </Routes>
         </View>
@@ -112,5 +112,5 @@ const styles = StyleSheet.create({
 
 
 // Export
-export default Navbar
+export default Navbar;
 // underlayColor="#f0f4f7"

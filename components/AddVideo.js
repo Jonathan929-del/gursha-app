@@ -53,9 +53,7 @@ const AddVideo = ({theme}) => {
   // Selecting video
   const videoRef = useRef(null);
   const [videoPreview, setVideoPreview] = useState(null);
-  const [text, setText] = useState('');
   const pickVideo = async () => {
-    setText('Clicked');
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes:ImagePicker.MediaTypeOptions.Videos,
       allowsEditing:true,
@@ -100,7 +98,6 @@ const AddVideo = ({theme}) => {
         <TouchableOpacity style={[styles.addVideo, {backgroundColor:theme.colors.primary}]} onPress={videoPreview ? publishVideo : pickVideo}>
           <Text style={styles.addText}>{videoPreview ? 'Publish video' : 'Add video'}</Text>
           {!videoPreview && <Text style={styles.addIcon}>+</Text>}
-          <Text>{text}</Text>
         </TouchableOpacity>
         {progress.total !== null && (
           <>
