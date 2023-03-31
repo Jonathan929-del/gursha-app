@@ -38,6 +38,8 @@ const AddVideo = ({theme}) => {
     .then(res => {
       Storage.get(res.key)
       .then(result => {
+        let videoResult = result.substring(0, result.indexOf('?'));
+        console.log(videoResult);
         setProgress({loaded:null, total:null, uploaded:true});
         setTimeout(() => {
           setProgress({loaded:null, total:null, uploaded:false});

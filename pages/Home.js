@@ -1,6 +1,6 @@
 // Imports
+import {Text, View, StyleSheet} from 'react-native';
 import {IconButton, Avatar} from 'react-native-paper';
-import {Text, View, StyleSheet, Dimensions} from 'react-native';
 
 
 
@@ -56,7 +56,7 @@ const Home = () => {
         </View>
       </View>
     </View>
-  )
+  );
 };
 
 
@@ -67,8 +67,9 @@ const Home = () => {
 // Styles
 const styles = StyleSheet.create({
   container:{
-    backgroundColor:'#000',
-    height:Dimensions.get('screen').height - 70
+    height:'100%',
+    paddingBottom:50,
+    backgroundColor:'#000'
   },
   videoContainer:{
 
@@ -164,4 +165,4 @@ const styles = StyleSheet.create({
 
 
 // Export
-export default Home
+export default Home;

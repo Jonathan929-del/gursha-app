@@ -45,6 +45,9 @@
       "eas": {
         "projectId": "a182d029-897c-4754-ad76-fb1cff75da9a"
       }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/a182d029-897c-4754-ad76-fb1cff75da9a"
     }
   }
 }

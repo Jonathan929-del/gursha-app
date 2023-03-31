@@ -1,9 +1,11 @@
 // Imports
 import React from 'react';
-import Home from './Home';
-import Inbox from './Inbox';
-import Profile from './Profile';
-import AddVideo from './AddVideo';
+import Home from '../pages/Home';
+import Inbox from '../pages/Inbox';
+import Login from '../pages/Login';
+import Profile from '../pages/Profile';
+import Register from '../pages/Register';
+import AddVideo from '../pages/AddVideo';
 import {IconButton} from 'react-native-paper';
 import {View, StyleSheet, Text} from 'react-native';
 import {Route, Link, Routes} from 'react-router-native';
@@ -13,7 +15,7 @@ import {Route, Link, Routes} from 'react-router-native';
 
 
 // Main Function
-const Navbar = ({theme}) => {
+const Navbar = ({theme, SERVER_API}) => {
     return (
         <View style={styles.container}>
             <View style={styles.nav}>
@@ -46,6 +48,8 @@ const Navbar = ({theme}) => {
                 <Route path="/inbox" element={<Inbox />} />
                 <Route path="/add" element={<AddVideo theme={theme}/>} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/login" element={<Login theme={theme} SERVER_API={SERVER_API}/>} />
+                <Route path="/register" element={<Register theme={theme} SERVER_API={SERVER_API}/>} />
             </Routes>
         </View>
     );
