@@ -18,6 +18,7 @@ const Profile = () => {
       <Link to='/register'>
         <Text>Register</Text>
       </Link>
+      <Text>SOME TEXT</Text>
     </>
   )
 };

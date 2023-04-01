@@ -38,16 +38,14 @@
         }
       ]
     ],
-    "runtimeVersion": {
-      "policy": "nativeVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "extra": {
       "eas": {
-        "projectId": "a182d029-897c-4754-ad76-fb1cff75da9a"
+        "projectId": "28a852e9-5ec6-4615-a627-0c4e2546386c"
       }
     },
     "updates": {
-      "url": "https://u.expo.dev/a182d029-897c-4754-ad76-fb1cff75da9a"
+      "url": "https://u.expo.dev/28a852e9-5ec6-4615-a627-0c4e2546386c"
     }
   }
 }
