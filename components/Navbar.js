@@ -46,8 +46,8 @@ const Navbar = ({theme, SERVER_API}) => {
             <Routes>
                 <Route exact path="/" element={<Home />} />
                 <Route path="/inbox" element={<Inbox />} />
-                <Route path="/add" element={<AddVideo theme={theme}/>} />
-                <Route path="/profile" element={<Profile />} />
+                <Route path="/add" element={<AddVideo theme={theme} SERVER_API={SERVER_API}/>} />
+                <Route path="/profile" element={<Profile theme={theme} myProfile={true}/>} />
                 <Route path="/login" element={<Login theme={theme} SERVER_API={SERVER_API}/>} />
                 <Route path="/register" element={<Register theme={theme} SERVER_API={SERVER_API}/>} />
             </Routes>
