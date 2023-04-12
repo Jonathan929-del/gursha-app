@@ -44,7 +44,7 @@ const Navbar = ({theme, SERVER_API}) => {
                 </Link>
             </View>
             <Routes>
-                <Route exact path="/" element={<Home />} />
+                <Route exact path="/" element={<Home theme={theme} SERVER_API={SERVER_API}/>} />
                 <Route path="/inbox" element={<Inbox />} />
                 <Route path="/add" element={<AddVideo theme={theme} SERVER_API={SERVER_API}/>} />
                 <Route path="/profile" element={<Profile theme={theme} myProfile={true}/>} />

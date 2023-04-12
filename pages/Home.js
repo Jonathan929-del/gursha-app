@@ -1,60 +1,143 @@
 // Imports
-import {Text, View, StyleSheet} from 'react-native';
+import axios from 'axios';
+import {Video} from 'expo-av';
+import PagerView from 'react-native-pager-view';
+import {useEffect, useState, useRef} from 'react';
 import {IconButton, Avatar} from 'react-native-paper';
+import AnotherUserProfile from './AnotherUserProfile';
+import {Text, View, StyleSheet, Pressable, Dimensions} from 'react-native';
 
 
 
 
 
 // Main Function
-const Home = () => {
+const Home = ({theme, SERVER_API}) => {
+
+
+
+  // Video
+  const videoRef = useRef(null);
+  const [playingVideoId, setPlayingVideoId] = useState('');
+  const [isVideoPlaying, setIsVideoPlaying] = useState(true);
+  const [isUserModalOpened, setIsUserModalOpened] = useState(false);
+
+
+
+  // Fetching posts
+  const [posts, setPosts] = useState([{}]);
+  const postsFetcher = async e => {
+    try {
+      const link = `${SERVER_API}/posts/`;
+      const res = await axios.get(link);
+      setPosts(res.data);
+      setPlayingVideoId(res.data[0]?._id);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+
+
+  // Video switcher
+  const videoSwitcher = e => {
+    setPlayingVideoId(posts[e.nativeEvent.position]._id);
+    setIsVideoPlaying(true);
+  };
+  
+
+  
+  // Liking post
+  const likeHandler = async id => {
+    console.log(id);
+  };
+
+
+
+  // Use effect
+  useEffect(() => {
+    postsFetcher();
+  }, []);
+
+
+
   return (
     <View style={styles.container}>
-      <View style={styles.videoContainer}>
-
-      </View>
-      <View style={styles.content}>
-        <View style={styles.topbar}>
-          <View style={styles.pages}>
-            <Text style={styles.page}>Friends</Text>
-            <Text style={styles.page}>Following</Text>
-            <Text style={styles.page}>For You</Text>
-            <IconButton style={styles.searchIcon} icon='magnify' size={30} iconColor='#fff'/>
-          </View>
+      <AnotherUserProfile
+        isUserModalOpened={isUserModalOpened}
+        setIsUserModalOpened={setIsUserModalOpened}
+        user={{name:'Dummy name'}}
+        theme={theme}
+      />
+      <View style={styles.topbar}>
+        <View style={styles.pages}>
+          <Text style={styles.page}>Friends</Text>
+          <Text style={styles.page}>Following</Text>
+          <Text style={styles.page}>For You</Text>
+          <IconButton style={styles.searchIcon} icon='magnify' size={30} iconColor='#fff'/>
         </View>
-        <View style={styles.textsContainer}>
-          <View style={styles.texts}>
-            <View style={styles.textsContent}>
-              <Text style={styles.username}>User</Text>
-              <Text style={styles.description}>User description</Text>
-            </View>
-          </View>
-          <View style={styles.interactions}>
-            <View style={styles.userProfile}>
-              <View>
-                <Avatar.Image source={require('../assets/favicon.png')}/>
-                <Avatar.Icon icon='plus' size={25} style={styles.followIcon}/>
+      </View>
+      <PagerView
+        style={styles.pagerView}
+        scrollEnabled
+        orientation='vertical'
+        onPageSelected={e => {
+          videoSwitcher(e);
+        }}
+      >
+        {posts.map(post => (
+          <View>
+            <Pressable style={styles.post} onPress={() => setIsVideoPlaying(!isVideoPlaying)}>
+              <View style={styles.videoContainer}>
+                <Video
+                  ref={videoRef}
+                  source={{uri:post.video}}
+                  resizeMode="contain"
+                  isLooping
+                  shouldPlay={playingVideoId === post._id ? isVideoPlaying : false}
+                  style={styles.video}
+                />
               </View>
-            </View>
-            <View style={styles.itemContainer}>
-              <IconButton icon='heart' size={40} iconColor='#fff'/>
-              <Text style={styles.number}>921</Text>
-            </View>
-            <View style={styles.itemContainer}>
-              <IconButton icon='clipboard-text' size={40} iconColor='#fff'/>
-              <Text style={styles.number}>50</Text>
-            </View>
-            <View style={styles.itemContainer}>
-              <IconButton icon='star' size={40} iconColor='#fff'/>
-              <Text style={styles.number}>35</Text>
-            </View>
-            <View style={styles.itemContainer}>
-              <IconButton icon='arrow-right-thick' size={40} iconColor='#fff'/>
-              <Text style={styles.number}>13</Text>
-            </View>
+              <View style={styles.content}>
+                <View style={styles.textsContainer}>
+                  <View style={styles.texts}>
+                    <View style={styles.textsContent}>
+                      <Text style={styles.username}>{post.username}</Text>
+                      <Text style={styles.description}>{post.body}</Text>
+                    </View>
+                  </View>
+                  <View style={styles.interactions}>
+                    <View style={styles.userProfile}>
+                      <View>
+                        <Pressable onPress={() => setIsUserModalOpened(true)}>
+                          <Avatar.Image source={require('../assets/favicon.png')}/>
+                        </Pressable>
+                        <Avatar.Icon icon='plus' size={25} style={styles.followIcon}/>
+                      </View>
+                    </View>
+                    <Pressable style={styles.itemContainer} onPress={() => likeHandler(post.username)}>
+                      <IconButton icon='heart' size={40} iconColor='#fff'/>
+                      <Text style={styles.number}>{post.likesCount}</Text>
+                    </Pressable>
+                    <View style={styles.itemContainer}>
+                      <IconButton icon='clipboard-text' size={40} iconColor='#fff'/>
+                      <Text style={styles.number}>{post.commentsCount}</Text>
+                    </View>
+                    <View style={styles.itemContainer}>
+                      <IconButton icon='star' size={40} iconColor='#fff'/>
+                      <Text style={styles.number}>{post.favouritesCount}</Text>
+                    </View>
+                    <View style={styles.itemContainer}>
+                      <IconButton icon='arrow-right-thick' size={40} iconColor='#fff'/>
+                      <Text style={styles.number}>{post.sharesCount}</Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            </Pressable>
           </View>
-        </View>
-      </View>
+        ))}
+      </PagerView>
     </View>
   );
 };
@@ -67,23 +150,42 @@ const Home = () => {
 // Styles
 const styles = StyleSheet.create({
   container:{
-    height:'100%',
-    paddingBottom:50,
-    backgroundColor:'#000'
+    backgroundColor:'#000',
+    height:Dimensions.get('screen').height
+  },
+  post:{
+    height:Dimensions.get('screen').height
   },
   videoContainer:{
-
+    width:'100%',
+    display:'flex',
+    alignItems:'center',
+    position:'absolute',
+    justifyContent:'center',
+    height:Dimensions.get('screen').height
+  },
+  video:{
+    width:'100%',
+    height:Dimensions.get('screen').height
   },
   content:{
     height:'100%',
     display:'flex',
+    paddingBottom:70,
     alignItems:'center',
-    justifyContent:'space-between'
+    justifyContent:'flex-end'
+  },
+  pagerView:{
+    flex:1
   },
   topbar:{
+    top:0,
+    zIndex:2,
+    width:'100%',
     display:'flex',
     alignItems:'center',
-    justifyContent:'center',
+    position:'absolute',
+    justifyContent:'center'
   },
   pages:{
     width:'50%',

@@ -3,7 +3,7 @@ import {Link} from 'react-router-native';
 import {Button} from 'react-native-paper';
 import {useContext, useState} from 'react';
 import {AuthContext} from '../context/Auth';
-import {FlatGrid} from 'react-native-super-grid';
+import VideosProfilePreview from '../components/VideosProfilePreview';
 import {StyleSheet, Text, View, ScrollView, Dimensions, Pressable} from 'react-native';
 
 
@@ -11,7 +11,7 @@ import {StyleSheet, Text, View, ScrollView, Dimensions, Pressable} from 'react-n
 
 
 // Main Function
-const Profile = ({theme, myProfile}) => {
+const Profile = ({theme}) => {
 
 
 
@@ -66,42 +66,22 @@ const Profile = ({theme, myProfile}) => {
               <Text style={styles.category}>Likes</Text>
             </View>
           </View>
-          {myProfile ? (
           <Button style={styles.buttonContainer}>
             <Text style={[styles.button, {color:theme.colors.primary}]}>
               Edit profile
             </Text>
           </Button>
-          ) : (
-            <Button style={styles.buttonContainer}>
-              <Text style={[styles.button, {color:theme.colors.primary}]}>
-                Follow
-              </Text>
-            </Button>
-          )}
           <Text style={styles.hr}>-</Text>
-          <View>
-            <FlatGrid
-              data={items}
-              style={styles.gridView}
-              staticDimension={Dimensions.get('screen').width}
-              spacing={0}
-              renderItem={({item}) => (
-                <View style={styles.itemContainer}>
-                  <Text style={styles.itemName}>{item.name}</Text>
-                </View>
-              )}
-            />
-          </View>
+          <VideosProfilePreview items={items}/>
         </>
       ) : (
-        <View style={styles.noUserActionsContainer}>
-            <Link to='/login'>
-              <Text style={{color:theme.colors.primary}}>Login</Text>
-            </Link>
-            <Link to='/register'>
-              <Text style={{color:theme.colors.primary, marginLeft:20}}>Register</Text>
-            </Link>
+        <View style={styles.authenticatedContainer}>
+          <Link to='/register'>
+            <Text style={{marginBottom:15, marginTop:30, color:theme.colors.primary}}>Register</Text>
+          </Link>
+          <Link to='/login'>
+            <Text style={{color:theme.colors.primary}}>Login</Text>
+          </Link>
         </View>
       )}
     </ScrollView>
@@ -127,17 +107,15 @@ const styles = StyleSheet.create({
     textAlign:'center',
   },
   actionsContainer:{
-    right:30,
     top:20,
+    right:30,
     position:'absolute'
   },
-  noUserActionsContainer:{
-    width:'100%',
+  authenticatedContainer:{
     display:'flex',
     alignItems:'center',
-    flexDirection:'row',
     justifyContent:'center',
-    height:Dimensions.get('screen').height,
+    height:Dimensions.get('screen').height
   },
   imageContainer:{
     width:'100%',

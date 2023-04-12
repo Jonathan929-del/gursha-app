@@ -27,9 +27,8 @@ const AddVideo = ({theme, SERVER_API}) => {
 
 
   // Uploading video
-  const [videoResult, setVideoResult] = useState({});
   const [input, setInput] = useState('');
-  const [videoUploadUri, setVideoUploadUri] = useState();
+  const [videoResult, setVideoResult] = useState({});
   const [progress, setProgress] = useState({loaded:null, total:null, uploaded:false});
   let theProgress = Math.round((progress.loaded / progress.total) * 10) / 10;
   const fetchVideoUri = async uri => {
@@ -48,10 +47,31 @@ const AddVideo = ({theme, SERVER_API}) => {
     })
     .then(res => {
       Storage.get(res.key)
-      .then(result => {
-        let videoResult = result.substring(0, result.indexOf('?'));
-        setVideoUploadUri(videoResult);
+      .then(async result => {
+        let videoResultUri = result.substring(0, result.indexOf('?'));
+        console.log('videoResult: ', videoResult);
         setProgress({loaded:null, total:null, uploaded:true});
+
+
+        // Posting video
+        if(videoResultUri.trim() !== ''){
+          try {
+            const link = `${SERVER_API}/posts`;
+            const res = await axios.post(link, {
+              video:videoResultUri,
+              body:input
+            },{
+              headers:{
+                Authorization:`Bearer ${user.token}`
+              }
+            });
+            console.log(res.data);
+          } catch (err) {
+            console.log(err);
+          }
+        };
+
+
         setTimeout(() => {
           setProgress({loaded:null, total:null, uploaded:false});
         }, 3000)
@@ -81,23 +101,8 @@ const AddVideo = ({theme, SERVER_API}) => {
   const postVideo = async () => {
     uploadFile(videoResult);
     setVideoPreview(null);
-
-    if(videoUploadUri){
-      try {
-        const link = `${SERVER_API}/posts`;
-        const res = await axios.post(link, {
-          video:videoUploadUri,
-          body:input
-        },{
-          headers:{
-            Authorization:`Bearer ${user.token}`
-          }
-        });
-        console.log(res.data);
-      } catch (err) {
-        console.log(err.response.data);
-      }
-    };
+    setInput('');
+    setVideoResult({});
   };
 
 
@@ -111,10 +116,10 @@ const AddVideo = ({theme, SERVER_API}) => {
         <View style={styles.authenticatedContainer}>
           <Text style={styles.authenticationText}>Login to be able to publish videos..</Text>
           <Link to='/register'>
-            <Text style={[styles.authenticationText, {marginBottom:15, marginTop:30}]}>Register</Text>
+            <Text style={{marginBottom:15, marginTop:30, color:theme.colors.primary}}>Register</Text>
           </Link>
           <Link to='/login'>
-            <Text style={styles.authenticationText}>Login</Text>
+            <Text style={{color:theme.colors.primary}}>Login</Text>
           </Link>
         </View>
 
