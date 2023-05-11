@@ -42,6 +42,7 @@ localStorageCheck();
 const AuthContext = createContext({
     user:null,
     login:userData => {},
+    update:() => {},
     logout:() => {}
 });
 
@@ -57,6 +58,19 @@ const AuthReducer = (state, action) => {
                 ...state,
                 user:action.payload
             }
+        case 'UPDATE':
+            let followingArray = state.user.following;
+            const userId = action.payload.newFollowing;
+            if(followingArray?.includes(userId)){
+                const newArray = followingArray.filter(id => id !== userId);
+                followingArray = newArray;
+            }else{
+                followingArray.push(userId);
+            }
+            return {
+                ...state,
+                user:{...state.user, bio:action.payload.bio, profilePic:action.payload.profilePic, following:followingArray}
+            };
         case 'LOGOUT':
             return{
                 ...state,
@@ -85,6 +99,16 @@ const AuthProvider = props => {
             console.log(err);
         }
     };
+    const update = async ({bio, profilePic, newFollowing}) => {
+        try {
+            dispatch({
+                type:'UPDATE',
+                payload:{bio, profilePic, newFollowing}
+            });
+        } catch (err) {
+            console.log(err);
+        }
+    };
     const logout = async () => {
         try {
             await AsyncStorage.removeItem('token');
@@ -97,7 +121,7 @@ const AuthProvider = props => {
     };
     return(
         <AuthContext.Provider
-            value={{user:state.user, login, logout}}
+            value={{user:state.user, login, update, logout}}
             {...props}
         />
     );

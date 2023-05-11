@@ -1,47 +1,79 @@
 // Imports
+import axios from 'axios';
+import {SERVER_API} from '@env';
 import {Button} from 'react-native-paper';
-import {useContext, useState} from 'react';
 import {AuthContext} from '../context/Auth';
 import {IconButton} from 'react-native-paper';
+import {useContext, useEffect, useState} from 'react';
 import VideosProfilePreview from '../components/VideosProfilePreview';
-import {Text, Modal, View, Pressable, StyleSheet, Dimensions, ScrollView} from 'react-native';
+import {Text, Modal, View, Pressable, StyleSheet, Dimensions, ScrollView, Image} from 'react-native';
 
 
 
 
 
 // Main function
-const AnotherUserProfile = ({isUserModalOpened, setIsUserModalOpened, user, theme}) => {
+const AnotherUserProfile = ({isUserModalOpened, setIsUserModalOpened, user, theme, isFollowIconVisible, setIsFollowIconVisible}) => {
 
 
-    const {logout}  = useContext(AuthContext);
-    const [items, setItems] = useState([
-        { name: '1', code: '#1abc9c' },
-        { name: '2', code: '#2ecc71' },
-        { name: '4', code: '#3498db' },
-        { name: '3', code: '#9b59b6' },
-        { name: '5', code: '#34495e' },
-        { name: '6', code: '#16a085' },
-        { name: '7', code: '#27ae60' },
-        { name: '8', code: '#2980b9' },
-        { name: '9', code: '#8e44ad' },
-        { name: '10', code: '#2c3e50' },
-      ]);
+
+    // User
+    const {user:registeredUser, update} = useContext(AuthContext);
+
+
+
+    // User's posts
+    const [posts, setPosts] = useState([]);
+    const postsFetcher = async () => {
+        try {
+            const link = `${SERVER_API}/posts/${user._id}`;
+            const res = await axios.get(link);
+            setPosts(res.data);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+
+
+    // Follow handler
+    const followHandler = async () => {
+        try {
+            const link = `${SERVER_API}/users/follow/${user._id}`
+            const res = await axios.put(link, {followerId:registeredUser._id});
+            setIsFollowIconVisible(!isFollowIconVisible);
+            update({newFollowing:user._id});
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+
+
+    // Use effect
+    useEffect(() => {
+        postsFetcher();
+        setIsFollowIconVisible(registeredUser?.following?.includes(user._id) ? false : true);
+    }, [isUserModalOpened]);
+
+
 
     return (
+        user &&
         <Modal visible={isUserModalOpened}>
             <View style={styles.container}>
                 <Pressable onPress={() => setIsUserModalOpened(false)} style={styles.backButton}>
                     <IconButton icon='arrow-left' iconColor='#fff'/>
                 </Pressable>
-                <ScrollView style={styles.container}>
+                <ScrollView>
                     <View style={styles.bioContainer}>
                         <Text style={styles.bio}>{user.bio}</Text>
                     </View>
                     <View style={styles.imageContainer}>
-                        <View style={styles.imageWrapper}>
-                        
-                        </View>
+                        <Image
+                            source={{uri:user.profilePic}}
+                            style={styles.image}
+                        />
                     </View>
                     <View style={styles.nameContainer}>
                         <Text style={styles.name}>{user.username}</Text>
@@ -56,17 +88,24 @@ const AnotherUserProfile = ({isUserModalOpened, setIsUserModalOpened, user, them
                             <Text style={styles.category}>Followers</Text>
                         </View>
                         <View style={styles.item}>
-                            <Text style={styles.number}>{user.likesCount || 0}</Text>
+                            <Text style={styles.number}>{user.likesCount}</Text>
                             <Text style={styles.category}>Likes</Text>
                         </View>
                     </View>
-                    <Button style={styles.buttonContainer}>
-                        <Text style={[styles.button, {color:theme.colors.primary}]}>
-                            Follow
-                        </Text>
-                    </Button>
+                    {registeredUser && (
+                        <Button style={styles.buttonContainer} onPress={followHandler}>
+                            <Text style={[styles.button, {color:theme.colors.primary}]}>
+                                {isFollowIconVisible ? 'Follow' : 'Unfollow'}
+                            </Text>
+                        </Button>
+                    )}
                     <Text style={styles.hr}>-</Text>
-                    <VideosProfilePreview items={items}/>
+                    <View>
+                        <VideosProfilePreview
+                            posts={posts}
+                            theme={theme}
+                        />
+                    </View>
                 </ScrollView>
             </View>
         </Modal>
@@ -92,11 +131,12 @@ const styles = StyleSheet.create({
     },
     bioContainer:{
         width:'100%',
+        marginTop:50
     },
     bio:{
         color:'#fff',
         paddingTop:20,
-        textAlign:'center',
+        textAlign:'center'
     },
     imageContainer:{
         width:'100%',
@@ -104,11 +144,10 @@ const styles = StyleSheet.create({
         display:'flex',
         alignItems:'center'
     },
-    imageWrapper:{
+    image:{
         width:100,
         height:100,
-        borderRadius:200,
-        backgroundColor:'#fff'
+        borderRadius:50
     },
     nameContainer:{
         width :'100%'
@@ -138,7 +177,7 @@ const styles = StyleSheet.create({
         color:'#ccc'
     },
     buttonContainer:{
-        paddingTop:20
+        marginTop:20
     },
     button:{
         fontSize:18,

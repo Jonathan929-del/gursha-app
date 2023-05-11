@@ -1,23 +1,39 @@
 // Imports
 import React from 'react';
 import Home from '../pages/Home';
+import Info from '../pages/Info';
+import Edit from '../pages/Edit';
 import Inbox from '../pages/Inbox';
 import Login from '../pages/Login';
 import Profile from '../pages/Profile';
 import Register from '../pages/Register';
 import AddVideo from '../pages/AddVideo';
+import Following from '../pages/Following';
 import {IconButton} from 'react-native-paper';
-import {View, StyleSheet, Text} from 'react-native';
 import {Route, Link, Routes} from 'react-router-native';
+import {View, StyleSheet, Text, Dimensions} from 'react-native';
 
 
 
 
 
 // Main Function
-const Navbar = ({theme, SERVER_API}) => {
+const Navbar = ({theme}) => {
     return (
         <View style={styles.container}>
+            <View style={styles.content}>
+                <Routes>
+                    <Route exact path="/" element={<Home theme={theme} />} />
+                    <Route exact path="/following" element={<Following theme={theme} />} />
+                    <Route path="/inbox" element={<Inbox theme={theme}/>} />
+                    <Route path="/add" element={<AddVideo theme={theme} />} />
+                    <Route path="/profile" element={<Profile theme={theme} />} />
+                    <Route path="/edit" element={<Edit theme={theme} />} />
+                    <Route path="/login" element={<Login theme={theme} />} />
+                    <Route path="/register" element={<Register theme={theme} />} />
+                    <Route path="/info" element={<Info theme={theme} />} />
+                </Routes>
+            </View>
             <View style={styles.nav}>
                 <Link to="/" style={styles.navItem}>
                     <View style={styles.tabContainer}>
@@ -43,14 +59,6 @@ const Navbar = ({theme, SERVER_API}) => {
                     </View>
                 </Link>
             </View>
-            <Routes>
-                <Route exact path="/" element={<Home theme={theme} SERVER_API={SERVER_API}/>} />
-                <Route path="/inbox" element={<Inbox />} />
-                <Route path="/add" element={<AddVideo theme={theme} SERVER_API={SERVER_API}/>} />
-                <Route path="/profile" element={<Profile theme={theme} myProfile={true}/>} />
-                <Route path="/login" element={<Login theme={theme} SERVER_API={SERVER_API}/>} />
-                <Route path="/register" element={<Register theme={theme} SERVER_API={SERVER_API}/>} />
-            </Routes>
         </View>
     );
 };
@@ -62,18 +70,19 @@ const Navbar = ({theme, SERVER_API}) => {
 // Styles
 const styles = StyleSheet.create({
     container:{
-        height:'100%'
+        height:Dimensions.get('screen').height
+    },
+    content:{
+        backgroundColor:'#000',
+        height:Dimensions.get('screen').height - 100,
     },
     nav:{
-        bottom:0,
-        zIndex:10,
         height:50,
         width:'100%',
         display:'flex',
         paddingBottom:10,
         borderTopWidth:1,
         borderColor:'#ccc',
-        position:'absolute',
         flexDirection:'row',
         backgroundColor:'#000'
     },

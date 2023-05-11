@@ -1,6 +1,7 @@
 // Imports
 import axios from 'axios';
 import {Video} from 'expo-av';
+import {SERVER_API} from '@env';
 import {Link} from 'react-router-native';
 import awsconfig from '../src/aws-exports';
 import {AuthContext} from '../context/Auth';
@@ -9,7 +10,7 @@ import * as ImagePicker from 'expo-image-picker';
 import {useState, useRef, useContext} from 'react';
 import {FormItem} from 'react-native-form-component';
 import {IconButton, ProgressBar} from 'react-native-paper';
-import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity, Pressable} from 'react-native';
 Amplify.configure(awsconfig);
 
 
@@ -17,12 +18,12 @@ Amplify.configure(awsconfig);
 
 
 // Main Function
-const AddVideo = ({theme, SERVER_API}) => {
+const AddVideo = ({theme}) => {
 
 
 
   // Authenticated user
-  const {user} = useContext(AuthContext);
+  const {user, logout} = useContext(AuthContext);
 
 
 
@@ -38,7 +39,7 @@ const AddVideo = ({theme, SERVER_API}) => {
   };
   const uploadFile = async file => {
     const video = await fetchVideoUri(file.assets[0].uri);
-    return Storage.put(`my-video-filename-${Math.random()}.mp4`, video, {
+    return Storage.put(`video-${Math.random()}.mp4`, video, {
       level:'public',
       contentType:video.type,
       progressCallback:uploadProgress => {
@@ -160,6 +161,9 @@ const AddVideo = ({theme, SERVER_API}) => {
                 </TouchableOpacity>
               </>
             )}
+            <Pressable onPress={logout}>
+              <Text></Text>
+            </Pressable>
             <TouchableOpacity style={[styles.addVideo, {backgroundColor:theme.colors.primary}]} onPress={videoPreview ? postVideo : pickVideo}>
               <Text style={styles.addText}>{videoPreview ? 'Publish video' : 'Add video'}</Text>
               {!videoPreview && <Text style={styles.addIcon}>+</Text>}

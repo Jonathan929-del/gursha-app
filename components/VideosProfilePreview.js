@@ -1,29 +1,49 @@
 // Imports
-import React from 'react';
+import {Video} from 'expo-av';
+import {useState} from 'react';
+import VideosModal from './VideosModal';
 import {FlatGrid} from 'react-native-super-grid';
-import {StyleSheet, View, Text, Dimensions} from 'react-native';
+import {StyleSheet, View,  Dimensions, Pressable} from 'react-native';
 
 
 
 
 
 // Main function
-const VideosProfilePreview = ({items}) => {
-  return (
-    <View>
-        <FlatGrid
-            data={items}
-            style={styles.gridView}
-            staticDimension={Dimensions.get('screen').width}
-            spacing={0}
-            renderItem={({item}) => (
-                <View style={styles.itemContainer}>
-                    <Text style={styles.itemName}>{item.name}</Text>
-                </View>
-            )}
-        />
-    </View>
-  )
+const VideosProfilePreview = ({posts, theme}) => {
+
+
+    // Videos modal opening
+    const [isVideosModalOpened, setIsVideosModalOpened] = useState(false);
+    const videosModalOpener = id => {
+        setIsVideosModalOpened(true);
+    };
+
+    return (
+        <View>
+            <FlatGrid
+                data={posts}
+                style={styles.gridView}
+                staticDimension={Dimensions.get('screen').width}
+                spacing={0}
+                renderItem={({item}) => (
+                    <Pressable style={styles.itemContainer} onPress={() => videosModalOpener(item._id)}>
+                        <Video
+                            source={{uri:item.video}}
+                            resizeMode='contain'
+                            style={styles.video}
+                        />
+                    </Pressable>
+                )}
+            />
+            <VideosModal
+                posts={posts}
+                theme={theme}
+                isVideosModalOpened={isVideosModalOpened}
+                setIsVideosModalOpened={setIsVideosModalOpened}
+            />
+        </View>
+    );
 };
 
 
@@ -38,7 +58,6 @@ const styles = StyleSheet.create({
         paddingBottom:55
     },
     itemContainer: {
-        padding:10,
         height:220,
         borderWidth:0.2,
         borderColor:'#ccc',
@@ -47,6 +66,9 @@ const styles = StyleSheet.create({
     itemName: {
         fontSize:14,
         color:'#fff'
+    },
+    video:{
+        height:220
     }
 });
 

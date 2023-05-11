@@ -1,8 +1,11 @@
 // Imports
 import axios from 'axios';
+import {SERVER_API} from '@env';
+import {auth} from '../src/firebase';
 import {useContext, useState} from 'react';
 import {AuthContext} from '../context/Auth';
 import {useNavigate} from 'react-router-native';
+import {signInWithEmailAndPassword} from 'firebase/auth';
 import {Text, View, StyleSheet, ScrollView} from 'react-native';
 import {Form, FormItem, Label} from 'react-native-form-component';
 
@@ -11,7 +14,7 @@ import {Form, FormItem, Label} from 'react-native-form-component';
 
 
 // Main Function
-const Login = ({theme, SERVER_API}) => {
+const Login = ({theme}) => {
 
 
     // Values
@@ -32,6 +35,7 @@ const Login = ({theme, SERVER_API}) => {
             const res = await axios.post(link, values);
             setIsClicked(true);
             context.login(res.data);
+            await signInWithEmailAndPassword(auth, res.data.email, values.password);
             setValues({
                 username:'',
                 password:''

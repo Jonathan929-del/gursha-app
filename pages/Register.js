@@ -1,17 +1,22 @@
 // Imports
 import axios from 'axios';
-import {useNavigate} from 'react-router-native';
+import {SERVER_API} from '@env';
+import {db} from '../src/firebase';
+import {auth} from '../src/firebase';
 import {useContext, useState} from 'react';
 import {AuthContext} from '../context/Auth';
-import {Form, FormItem, Label} from 'react-native-form-component';
+import {doc, setDoc} from "firebase/firestore";
+import {useNavigate} from 'react-router-native';
+import {createUserWithEmailAndPassword} from 'firebase/auth';
 import {Text, View, StyleSheet, ScrollView} from 'react-native';
+import {Form, FormItem, Label} from 'react-native-form-component';
 
 
 
 
 
 // Main Function
-const Register = ({theme, SERVER_API}) => {
+const Register = ({theme}) => {
 
 
     // Values
@@ -34,6 +39,21 @@ const Register = ({theme, SERVER_API}) => {
             const res = await axios.post(link, values);
             setIsClicked(true);
             context.login(res.data);
+
+
+            // Firebase user
+            createUserWithEmailAndPassword(auth, values.email, values.password)
+            .then(() => {
+                setDoc(doc(db, 'users', res.data._id), {
+                    id:res.data._id,
+                    email:values.email,
+                    username:values.username
+                });
+                setDoc(doc(db, 'userChats', res.data._id), {});
+            })
+            .catch(e => console.log(e));
+
+
             setValues({
                 username:'',
                 email:'',
@@ -41,10 +61,10 @@ const Register = ({theme, SERVER_API}) => {
                 confirmPassword:''
             });
             setTimeout(() => {
-                navigate('/');
+                navigate('/info');
             }, 1000);
         } catch (err) {
-            setErrors(err.response.data);
+            setErrors(err);
         }
     };
 

@@ -1,0 +1,270 @@
+// Imports
+import axios from 'axios';
+import {Video} from 'expo-av';
+import {SERVER_API} from '@env';
+import Comments from './Comments';
+import {AuthContext} from '../context/Auth';
+import {IconButton, Avatar} from 'react-native-paper';
+import AnotherUserProfile from '../pages/AnotherUserProfile';
+import {useRef, useState, useContext, useEffect} from 'react';
+import {View, Text, Pressable, StyleSheet, Dimensions} from 'react-native';
+
+
+
+
+
+// Main function
+const Post = ({post, playingVideoId, isVideoPlaying, setIsVideoPlaying, theme, setIsCommentPosted, isCommentPosted, fromProfile, fromFollowing}) => {
+
+
+
+    // Post user
+    const [postUser, setPostUser] = useState({});
+
+
+
+    // Video
+    const videoRef = useRef(null);
+    const {user, update} = useContext(AuthContext);
+
+
+
+    // Modals
+    const [isUserModalOpened, setIsUserModalOpened] = useState(false);
+    const [isCommentOpened, setIsCommentsOpened] = useState(false);
+
+
+
+    // Liking post
+    const [likesCount, setLikesCount] = useState(post.likesCount);
+    const [isLiked, setIsLiked] = useState(false);
+    const likeHandler = async () => {
+        try {
+            if(user){
+                const link = `${SERVER_API}/posts/like/${post?._id}`;
+                const res = await axios.put(link, {userId:user?._id});
+                setLikesCount(res.data === 'Post liked.' ? likesCount + 1 : likesCount - 1);
+                setIsLiked(!isLiked);
+            }else{
+                console.log('No user assigned');
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+
+
+    // Follow handler
+    const [isFollowIconVisible, setIsFollowIconVisible] = useState(true);
+    const followHandler = async id => {
+        try {
+            const link = `${SERVER_API}/users/follow/${id}`
+            const res = await axios.put(link, {followerId:user?._id});
+            setIsFollowIconVisible(false);
+            update({newFollowing:id});
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+
+
+    // Use effect
+    useEffect(() => {
+        setLikesCount(post.likesCount);
+        post?.likes?.map(like => like.id === user?._id ? setIsLiked(true) : setIsLiked(false));
+        const fetchUser = async () => {
+            try {
+                const link = `${SERVER_API}/users/${post.username}`;
+                const res = await axios.get(link);
+                setPostUser(res.data);
+            } catch (err) {
+                console.log(err.response.data);
+            }
+        };
+        fetchUser();
+    }, [post]);
+    useEffect(() => {
+        setIsCommentsOpened(false);
+    }, [playingVideoId]);
+    useEffect(() => {
+        isUserModalOpened && setIsVideoPlaying(false);
+    }, [isUserModalOpened]);
+    useEffect(() => {
+        setIsFollowIconVisible(user?.following?.includes(postUser?._id) ? false : true);
+    }, [postUser]);
+
+
+
+    return (
+        <>
+            <View>
+                <AnotherUserProfile
+                    isUserModalOpened={isUserModalOpened}
+                    setIsUserModalOpened={setIsUserModalOpened}
+                    user={postUser}
+                    theme={theme}
+                    isFollowIconVisible={isFollowIconVisible}
+                    setIsFollowIconVisible={setIsFollowIconVisible}
+                />
+                <Pressable style={styles.post} onPress={() => {
+                    setIsVideoPlaying(!isVideoPlaying);
+                    setIsCommentsOpened(false);
+                }}>
+                    <View style={styles.videoContainer}>
+                        <Video
+                            ref={videoRef}
+                            source={{uri:post.video}}
+                            resizeMode='contain'
+                            isLooping
+                            shouldPlay={playingVideoId === post?._id ? isVideoPlaying : false}
+                            style={styles.video}
+                        />
+                    </View>
+                    <View style={styles.content}>
+                        <View style={styles.textsContainer}>
+                            <View style={styles.texts}>
+                                <View style={styles.textsContent}>
+                                    {!fromProfile && (
+                                        <Text style={styles.username}>{post.username}</Text>
+                                    )}
+                                    <Text style={styles.description}>{post.body}</Text>
+                                </View>
+                            </View>
+                            <View style={styles.interactions}>
+                                {!fromProfile && (
+                                    <View style={styles.userProfile}>
+                                        <View>
+                                            <Pressable onPress={() => setIsUserModalOpened(true)}>
+                                                <Avatar.Image source={{uri:postUser?.profilePic}}/>
+                                            </Pressable>
+                                            {user && post.user !== user?._id && isFollowIconVisible && !fromFollowing && (
+                                                <Pressable onPress={() => followHandler(post.user)}>
+                                                    <Avatar.Icon icon='plus' size={25} style={styles.followIcon}/>
+                                                </Pressable>
+                                            )}
+                                        </View>
+                                    </View>
+                                )}
+                                <Pressable style={styles.itemContainer} onPress={likeHandler}>
+                                    <IconButton
+                                        icon='heart'
+                                        size={40}
+                                        iconColor={user ? isLiked ? '#f00' : '#fff' : '#ffffff80'}
+                                    />
+                                    <Text style={styles.number}>{likesCount}</Text>
+                                </Pressable>
+                                <Pressable style={styles.itemContainer} onPress={() => setIsCommentsOpened(true)}>
+                                    <IconButton icon='clipboard-text' size={40} iconColor='#fff'/>
+                                    <Text style={styles.number}>{post.commentsCount}</Text>
+                                </Pressable>
+                            </View>
+                        </View>
+                    </View>
+                </Pressable>
+            </View>
+            <Comments
+                isCommentsOpened={isCommentOpened}
+                setIsCommentsOpened={setIsCommentsOpened}
+                post={post}
+                theme={theme}
+                setIsCommentPosted={setIsCommentPosted}
+                isCommentPosted={isCommentPosted}
+            />
+        </>
+    );
+};
+
+
+
+
+
+
+// Styles
+const styles = StyleSheet.create({
+    post:{
+        height:'100%'
+    },
+    videoContainer:{
+        width:'100%',
+        height:'100%',
+        display:'flex',
+        alignItems:'center',
+        position:'absolute',
+        justifyContent:'center'
+    },
+    video:{
+        height:Dimensions.get('screen').height,
+        width:Dimensions.get('screen').width + 100
+    },
+    content:{
+        height:'100%',
+        display:'flex',
+        alignItems:'center',
+        justifyContent:'flex-end'
+    },
+    textsContainer:{
+        width:'100%',
+        display:'flex',
+        alignItems:'center',
+        flexDirection:'row',
+        justifyContent:'space-between'
+    },
+    texts:{
+        width:'75%',
+        height:'100%',
+        display:'flex',
+        flexDirection:'row',
+        alignItems:'flex-end',
+        justifyContent:'flex-start'
+    },
+    textsContent:{
+        paddingVertical:10,
+        paddingHorizontal:20
+    },
+    username:{
+        fontSize:15,
+        color:'#fff',
+        paddingBottom:5
+    },
+    description:{
+        fontSize:12,
+        color:'#fff',
+        paddingBottom:10
+    },
+    interactions:{
+        display:'flex',
+        paddingBottom:200
+    },
+    userProfile:{
+        display:'flex',
+        marginBottom:5,
+        paddingVertical:20,
+        alignItems:'center',
+        justifyContent:'center'
+    },
+    followIcon:{
+        left:20,
+        bottom:-15,
+        position:'absolute'
+    },
+    itemContainer:{
+        display:'flex',
+        marginVertical:3,
+        alignItems:'center',
+        justifyContent:'center'
+    },
+    number:{
+        color:'#fff',
+        marginTop:-10,
+        marginBottom:10
+    }
+});
+
+
+
+
+
+// Export
+export default Post;

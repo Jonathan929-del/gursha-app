@@ -14,12 +14,12 @@ import {Text, View, StyleSheet, Dimensions, Pressable} from 'react-native';
 
 
 // Main Function
-const Home = ({theme}) => {
+const Following = ({theme}) => {
 
 
 
   // User
-  const {user} = useContext(AuthContext);
+  const {user:registeredUser} = useContext(AuthContext);
 
 
 
@@ -33,10 +33,13 @@ const Home = ({theme}) => {
   const [posts, setPosts] = useState([{}]);
   const postsFetcher = async e => {
     try {
-      const link = `${SERVER_API}/posts/`;
+      const link = `${SERVER_API}/posts/following/${registeredUser?._id}`;
       const res = await axios.get(link);
-      const userVideosFilter = res.data.filter(post => user ? post.user !== user._id : post);
-      setPosts(userVideosFilter);
+      setPosts(res.data.sort(
+        (a, b) => {
+            return new Date(b.createdAt) - new Date(a.createdAt);
+        }
+    ));
       setPlayingVideoId(res.data[0]?._id);
     } catch (err) {
       console.log(err);
@@ -62,28 +65,24 @@ const Home = ({theme}) => {
   useEffect(() => {
     postsFetcher();
   }, [isCommentPosted]);
-  useEffect(() => {
-    postsFetcher();
-  }, []);
+
 
 
   return (
       posts[0]?._id ? (
         <View style={styles.container}>
           <View style={styles.topbar}>
-            {user && (              
               <View style={styles.pages}>
                 <Pressable onPress={() => setIsVideoPlaying(true)}>
-                  <Link to='/following' underlayColor='transparent'>
-                    <Text style={styles.page}>Following</Text>
-                  </Link>
+                  <Text style={styles.selectedPage}>Following</Text>
                 </Pressable>
                 <Pressable onPress={() => setIsVideoPlaying(true)}>
-                  <Text style={styles.selectedPage}>For You</Text>
+                  <Link to='/' underlayColor='transparent'>
+                    <Text style={styles.page}>For You</Text>
+                  </Link>
                 </Pressable>
                 <IconButton style={styles.searchIcon} icon='magnify' size={30} iconColor='#fff'/>
               </View>
-            )}
             </View>
             <PagerView
               style={styles.pagerView}
@@ -94,17 +93,18 @@ const Home = ({theme}) => {
               }}
             >
               {posts?.map(post => (
-                <>
-                  <Post
-                      post={post}
-                      isVideoPlaying={isVideoPlaying}
-                      playingVideoId={playingVideoId}
-                      setIsVideoPlaying={setIsVideoPlaying}
-                      theme={theme}
-                      setIsCommentPosted={setIsCommentPosted}
-                      isCommentPosted={isCommentPosted}
-                    />
-                </>
+                  <>
+                    <Post
+                        post={post}
+                        isVideoPlaying={isVideoPlaying}
+                        playingVideoId={playingVideoId}
+                        setIsVideoPlaying={setIsVideoPlaying}
+                        theme={theme}
+                        setIsCommentPosted={setIsCommentPosted}
+                        isCommentPosted={isCommentPosted}
+                        fromFollowing={true}
+                      />
+                  </>
               ))}
             </PagerView>
           </View>
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     justifyContent:'space-between'
   },
   page:{
-    color:'#ccc'
+    color:'#fff'
   },
   selectedPage:{
     color:'#fff',
@@ -173,4 +173,4 @@ const styles = StyleSheet.create({
 
 
 // Export
-export default Home;
+export default Following;
