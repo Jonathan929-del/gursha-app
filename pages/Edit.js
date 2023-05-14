@@ -3,12 +3,13 @@ import axios from 'axios';
 import {SERVER_API} from '@env';
 import awsconfig from '../src/aws-exports';
 import {AuthContext} from '../context/Auth';
+import {AntDesign} from '@expo/vector-icons';
 import {Amplify, Storage} from 'aws-amplify';
-import {IconButton} from 'react-native-paper';
 import {useNavigate} from 'react-router-native';
 import * as ImagePicker from 'expo-image-picker';
+import {ActivityIndicator} from 'react-native-paper';
 import {useContext, useEffect, useState} from 'react';
-import {Text, View, StyleSheet, Pressable, TextInput, Image} from 'react-native';
+import {Text, View, StyleSheet, TextInput, Image, TouchableOpacity} from 'react-native';
 Amplify.configure(awsconfig);
 
 
@@ -23,19 +24,22 @@ const Edit = ({theme}) => {
     // Navigator
     const navigate = useNavigate();  
     const {user, update} = useContext(AuthContext);
+    const [isLoading, setIsLoading] = useState(false);
+    const [err, setErr] = useState('');
     
 
 
     // Uploading image
     const [imagePreview, setImagePreview] = useState('');
     const [imageResult, setImageResult] = useState({});
-    const [input, setInput] = useState(user.bio);
+    const [input, setInput] = useState({username:user.username, bio:user.bio});
     const fetchImageUri = async uri => {
         const response = await fetch(uri);
         const blob = await response.blob();
         return blob;
     };
     const uploadFile = async file => {
+        setIsLoading(true);
         const image = await fetchImageUri(file.assets[0].uri);
         return Storage.put(`image-${Math.random()}.png`, image, {
             level:'public',
@@ -52,11 +56,12 @@ const Edit = ({theme}) => {
                     try {
                         const link = `${SERVER_API}/users/update`;
                         await axios.put(link, {
-                            userId:user._id,
-                            bio:input,
+                            previousUsername:user.username,
+                            username:input.username,
+                            bio:input.bio,
                             profilePic:imageResultUri
                         });
-                        update({bio:input, profilePic:imageResultUri});
+                        update({username:input.username, bio:input.bio, profilePic:imageResultUri});
                         setTimeout(() => {
                             setInput('');
                             setImagePreview('');
@@ -65,7 +70,7 @@ const Edit = ({theme}) => {
                         }, 1000)
                     
                     } catch (err) {
-                        console.log(err);
+                        console.log(err.response.data);
                     }
                 };
             })
@@ -95,6 +100,7 @@ const Edit = ({theme}) => {
 
     // Posting image
     const postImage = async () => {
+        setIsLoading(true);
         if(imageResult?.assets){
             uploadFile(imageResult);
         }else{
@@ -102,12 +108,13 @@ const Edit = ({theme}) => {
                 const link = `${SERVER_API}/users/update`;
                 await axios.put(link, {
                     userId:user._id,
-                    bio:input,
+                    username:input.username,
+                    bio:input.bio,
                     profilePic:imagePreview ? user.profilePic : ''
                 });
-                update({bio:input, profilePic:imagePreview ? user.profilePic : ''});
+                update({username:input.username, bio:input.bio, profilePic:imagePreview ? user.profilePic : ''});
                 setTimeout(() => {
-                    setInput('');
+                    setInput({username:'', bio:''});
                     setImagePreview('');
                     setImageResult({});
                     navigate('/');
@@ -122,7 +129,7 @@ const Edit = ({theme}) => {
 
     // Use effect
     useEffect(() => {
-        setInput(user.bio);
+        setInput({username:user.username, bio:user.bio});
         setImagePreview(user.profilePic);
     }, []);
 
@@ -130,20 +137,26 @@ const Edit = ({theme}) => {
 
     return (
         <View style={styles.container}>
-            <Pressable onPress={() => navigate('/profile')} style={styles.backButton}>
-                <IconButton icon='arrow-left' iconColor='#fff'/>
-            </Pressable>
+            <TouchableOpacity onPress={() => navigate('/profile')} style={styles.backButton}>
+                <AntDesign name="arrowleft" size={30} color="#fff" />
+            </TouchableOpacity>
             <Text style={styles.editProfileText}>Edit profile</Text>
             <View style={styles.bioContainer}>
-                <Text style={styles.bioText}>Bio</Text>
+                <Text style={styles.bioText}>Username</Text>
                 <TextInput
-                    value={input}
-                    onChangeText={text => setInput(text)}
+                    value={input.username}
+                    onChangeText={text => setInput({...input, username:text})}
+                    style={[styles.input, {borderColor:theme.colors.primary}]}
+                />
+                <Text style={[styles.bioText, {marginTop:20}]}>Bio</Text>
+                <TextInput
+                    value={input.bio}
+                    onChangeText={text => setInput({...input, bio:text})}
                     style={[styles.input, {borderColor:theme.colors.primary}]}
                 />
             </View>
             <View style={styles.chooseProfileContainer}>
-                <Pressable onPress={pickImage} style={[styles.chooseButtonContainer, {borderColor:theme.colors.primary}]}>
+                <TouchableOpacity onPress={pickImage} style={[styles.chooseButtonContainer, {borderColor:theme.colors.primary}]}>
                     {imagePreview ? (
                         <View>
                             <Image
@@ -154,16 +167,19 @@ const Edit = ({theme}) => {
                     ) : (
                         <Text style={styles.chooseText}>profile picture</Text>
                     )}
-                </Pressable>
+                </TouchableOpacity>
                 {imagePreview && (
-                    <Pressable onPress={() => setImagePreview('')}>
+                    <TouchableOpacity onPress={() => setImagePreview('')}>
                         <Text style={styles.remove}>Delete image</Text>
-                    </Pressable>
+                    </TouchableOpacity>
                 )}
             </View>
-            <Pressable style={[styles.submitContainer, {backgroundColor:theme.colors.primary}]} onPress={postImage}>
+            <TouchableOpacity style={[styles.submitContainer, {backgroundColor:theme.colors.primary}]} onPress={postImage}>
                 <Text style={styles.submitText}>Edit</Text>
-            </Pressable>
+            </TouchableOpacity>
+            {isLoading && (
+                <ActivityIndicator animating={true} color='#fff' size={50} style={{marginTop:50}}/>
+            )}
         </View>
     );
 };
@@ -183,6 +199,8 @@ const styles = StyleSheet.create({
     backButton:{
         zIndex:1,
         width:'100%',
+        paddingLeft:10,
+        paddingVertical:5,
         borderColor:'#ccc',
         position:'absolute',
         borderBottomWidth:0.5,

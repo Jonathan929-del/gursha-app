@@ -3,9 +3,11 @@ import Chat from './Chat';
 import axios from 'axios';
 import {SERVER_API} from '@env';
 import {db} from '../src/firebase';
+import {Entypo} from '@expo/vector-icons';
 import {AuthContext} from '../context/Auth';
+import {AntDesign} from '@expo/vector-icons';
+import {ActivityIndicator} from 'react-native-paper';
 import {useState, useContext, useEffect} from 'react';
-import {IconButton, ActivityIndicator} from 'react-native-paper';
 import {Image, View, StyleSheet, TextInput, Text, TouchableOpacity} from 'react-native';
 import {collection, query, where, getDoc, setDoc, doc, updateDoc, serverTimestamp, getDocs, onSnapshot} from 'firebase/firestore';
 
@@ -139,25 +141,23 @@ const UsersList = ({theme}) => {
                         searchUser();
                     }}
                 />
-                <IconButton
-                    icon='magnify'
-                    iconColor='#fff'
-                    style={styles.searchIcon}
+                <TouchableOpacity
                     onPress={() => searchUser()}
-                    size={30}
-                />
+                    style={styles.searchIcon}
+                >
+                    <Entypo name="magnifying-glass" size={30} color="#fff" />
+                </TouchableOpacity>
                 {username && (
-                    <IconButton
-                        icon='close'
-                        iconColor='#fff'
+                    <TouchableOpacity
                         style={styles.closeIcon}
                         onPress={() => {
                             setUsername('');
                             setSearchedUser({});
                             setIsUserSearched(false);
                         }}
-                        size={30}
-                    />
+                    >
+                        <AntDesign name="close" size={30} color="#fff" />
+                    </TouchableOpacity>
                 )}
             </TouchableOpacity>
             {isUserSearched && (
@@ -182,12 +182,6 @@ const UsersList = ({theme}) => {
                                 />
                                 <View style={styles.texts}>
                                     <Text style={styles.username}>{user?.username}</Text>
-                                    <View style={styles.lastMessage}>
-                                        <Text style={styles.message}>
-                                            {user.lastMessage}
-                                        </Text>
-                                        {user?.lastMessage.split(' ').filter(num => num != '').length > 8 && (<Text style={styles.dots}>...</Text>)}
-                                    </View>
                                 </View>
                             </TouchableOpacity>
                         ))
@@ -228,12 +222,13 @@ const styles = StyleSheet.create({
         paddingLeft:60
     },
     searchIcon:{
-        top:10,
+        top:25,
+        left:10,
         position:'absolute'
     },
     closeIcon:{
-        top:15,
-        right:0,
+        top:25,
+        right:10,
         position:'absolute'
     },
     users:{
@@ -271,19 +266,7 @@ const styles = StyleSheet.create({
     },
     username:{
         fontSize:15,
-        color:'#fff',
-        marginBottom:10
-    },
-    lastMessage:{
-        height:20,
-        display:'flex',
-        paddingRight:80,
-        flexDirection:'row'
-    },
-    message:{
-        height:20,
-        fontSize:12,
-        color:'#ccc'
+        color:'#fff'
     },
     dots:{
         fontSize:18,

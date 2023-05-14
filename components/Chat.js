@@ -2,7 +2,7 @@
 import {db} from '../src/firebase';
 import uuid from 'react-native-uuid';
 import {AuthContext} from '../context/Auth';
-import {IconButton} from 'react-native-paper';
+import {AntDesign} from '@expo/vector-icons';
 import {useState, useContext, useEffect, useRef} from 'react';
 import {doc, onSnapshot, updateDoc, arrayUnion, Timestamp} from 'firebase/firestore';
 import {Modal, View, StyleSheet, Image, Text, TextInput, ScrollView, TouchableOpacity} from 'react-native';
@@ -59,12 +59,15 @@ const Chat = ({isChatOpened, setIsChatOpened, searchedUser, theme, setIsUserSear
     <Modal visible={isChatOpened}>
       <View style={styles.container}>
         <View style={styles.backButton}>
-            <IconButton icon='arrow-left' iconColor='#fff'
+            <TouchableOpacity
               onPress={() => {
                 setIsChatOpened(false);
                 setIsUserSearched(false);
               }}
-            />
+              style={styles.backIcon}
+            >
+              <AntDesign name="arrowleft" size={30} color="#fff" />
+            </TouchableOpacity>
         </View>
         <ScrollView
           style={styles.chat}
@@ -137,6 +140,11 @@ const styles = StyleSheet.create({
     position:'absolute',
     borderBottomWidth:1,
     backgroundColor:'#000'
+  },
+  backIcon:{
+    width:75,
+    paddingLeft:20,
+    paddingVertical:10
   },
   upperArea:{
     marginTop:80,

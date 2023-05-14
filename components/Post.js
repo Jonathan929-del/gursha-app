@@ -3,11 +3,13 @@ import axios from 'axios';
 import {Video} from 'expo-av';
 import {SERVER_API} from '@env';
 import Comments from './Comments';
+import {Avatar} from 'react-native-paper';
 import {AuthContext} from '../context/Auth';
-import {IconButton, Avatar} from 'react-native-paper';
+import {AntDesign} from '@expo/vector-icons';
+import {MaterialIcons} from '@expo/vector-icons';
 import AnotherUserProfile from '../pages/AnotherUserProfile';
 import {useRef, useState, useContext, useEffect} from 'react';
-import {View, Text, Pressable, StyleSheet, Dimensions} from 'react-native';
+import {View, Text, Pressable, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
 
 
 
@@ -136,29 +138,35 @@ const Post = ({post, playingVideoId, isVideoPlaying, setIsVideoPlaying, theme, s
                                 {!fromProfile && (
                                     <View style={styles.userProfile}>
                                         <View>
-                                            <Pressable onPress={() => setIsUserModalOpened(true)}>
+                                            <TouchableOpacity onPress={() => setIsUserModalOpened(true)}>
                                                 <Avatar.Image source={{uri:postUser?.profilePic}}/>
-                                            </Pressable>
+                                            </TouchableOpacity>
                                             {user && post.user !== user?._id && isFollowIconVisible && !fromFollowing && (
-                                                <Pressable onPress={() => followHandler(post.user)}>
+                                                <TouchableOpacity onPress={() => followHandler(post.user)}>
                                                     <Avatar.Icon icon='plus' size={25} style={styles.followIcon}/>
-                                                </Pressable>
+                                                </TouchableOpacity>
                                             )}
                                         </View>
                                     </View>
                                 )}
-                                <Pressable style={styles.itemContainer} onPress={likeHandler}>
-                                    <IconButton
-                                        icon='heart'
-                                        size={40}
-                                        iconColor={user ? isLiked ? '#f00' : '#fff' : '#ffffff80'}
-                                    />
+                                <View style={styles.itemContainer}>
+                                    {user ? (
+                                        <TouchableOpacity onPress={likeHandler}>
+                                            <AntDesign name="heart" size={40} color={user ? isLiked ? '#f00' : '#fff' : '#ffffff80'} />
+                                        </TouchableOpacity>
+                                    ) : (
+                                        <View>
+                                            <AntDesign name="heart" size={40} color={user ? isLiked ? '#f00' : '#fff' : '#ffffff80'} />
+                                        </View>
+                                    )}
                                     <Text style={styles.number}>{likesCount}</Text>
-                                </Pressable>
-                                <Pressable style={styles.itemContainer} onPress={() => setIsCommentsOpened(true)}>
-                                    <IconButton icon='clipboard-text' size={40} iconColor='#fff'/>
+                                </View>
+                                <View style={[styles.itemContainer, {marginTop:10}]}>
+                                    <TouchableOpacity onPress={() => setIsCommentsOpened(true)}>
+                                        <MaterialIcons name="comment" size={40} color="#fff" />
+                                    </TouchableOpacity>
                                     <Text style={styles.number}>{post.commentsCount}</Text>
-                                </Pressable>
+                                </View>
                             </View>
                         </View>
                     </View>
@@ -257,7 +265,6 @@ const styles = StyleSheet.create({
     },
     number:{
         color:'#fff',
-        marginTop:-10,
         marginBottom:10
     }
 });

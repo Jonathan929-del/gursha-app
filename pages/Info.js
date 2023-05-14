@@ -6,8 +6,9 @@ import {AuthContext} from '../context/Auth';
 import {Amplify, Storage} from 'aws-amplify';
 import {useNavigate} from 'react-router-native';
 import * as ImagePicker from 'expo-image-picker';
+import {ActivityIndicator} from 'react-native-paper';
 import {useContext, useEffect, useState} from 'react';
-import {Text, View, StyleSheet, Pressable, TextInput, Image} from 'react-native';
+import {Text, View, StyleSheet, TextInput, Image, TouchableOpacity} from 'react-native';
 Amplify.configure(awsconfig);
 
 
@@ -22,7 +23,8 @@ const Info = ({theme}) => {
   // Navigator
   const navigate = useNavigate();  
   const {user, update} = useContext(AuthContext);
- 
+  const [isLoading, setIsLoading] = useState(false);
+  
 
 
   // Uploading image
@@ -35,6 +37,7 @@ const Info = ({theme}) => {
     return blob;
   };
   const uploadFile = async file => {
+    setIsLoading(true);
     const image = await fetchImageUri(file.assets[0].uri);
     return Storage.put(`image-${Math.random()}.png`, image, {
       level:'public',
@@ -96,6 +99,7 @@ const Info = ({theme}) => {
     if(imagePreview){
       uploadFile(imageResult);
     }else{
+      setIsLoading(true);
       try {
         const link = `${SERVER_API}/users/update`;
         await axios.put(link, {
@@ -140,7 +144,7 @@ const Info = ({theme}) => {
           />
         </View>
         <View style={styles.chooseProfileContainer}>
-          <Pressable onPress={pickImage} style={[styles.chooseButtonContainer, {borderColor:theme.colors.primary}]}>
+          <TouchableOpacity onPress={pickImage} style={[styles.chooseButtonContainer, {borderColor:theme.colors.primary}]}>
             {imagePreview ? (
               <View>
                 <Image
@@ -151,19 +155,20 @@ const Info = ({theme}) => {
             ) : (
             <Text style={styles.chooseText}>profile picture</Text>
             )}
-          </Pressable>
+          </TouchableOpacity>
           {imagePreview && (
-            <Pressable onPress={() => setImagePreview('')}>
+            <TouchableOpacity onPress={() => setImagePreview('')}>
               <Text style={styles.remove}>Remove image</Text>
-            </Pressable>
+            </TouchableOpacity>
           )}
         </View>
-        <Pressable style={[styles.submitContainer, {backgroundColor:theme.colors.primary}]} onPress={postImage}>
+        <TouchableOpacity style={[styles.submitContainer, {backgroundColor:theme.colors.primary}]} onPress={postImage}>
           <Text style={styles.submitText}>Submit</Text>
-        </Pressable>
-        <Pressable style={styles.skipContainer} onPress={() => navigate('/')}>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.skipContainer} onPress={() => {setIsLoading(true);navigate('/')}}>
           <Text style={{color:theme.colors.primary}}>Skip</Text>
-        </Pressable>
+        </TouchableOpacity>
+        {isLoading && <ActivityIndicator animating={true} color='#fff' size={50} style={{marginTop:50}}/>}
       </View>
   );
 };

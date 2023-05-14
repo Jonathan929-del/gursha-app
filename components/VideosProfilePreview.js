@@ -3,7 +3,7 @@ import {Video} from 'expo-av';
 import {useState} from 'react';
 import VideosModal from './VideosModal';
 import {FlatGrid} from 'react-native-super-grid';
-import {StyleSheet, View,  Dimensions, Pressable} from 'react-native';
+import {StyleSheet, View,  Dimensions, TouchableOpacity} from 'react-native';
 
 
 
@@ -27,13 +27,13 @@ const VideosProfilePreview = ({posts, theme}) => {
                 staticDimension={Dimensions.get('screen').width}
                 spacing={0}
                 renderItem={({item}) => (
-                    <Pressable style={styles.itemContainer} onPress={() => videosModalOpener(item._id)}>
+                    <TouchableOpacity style={styles.itemContainer} onPress={() => videosModalOpener(item._id)}>
                         <Video
                             source={{uri:item.video}}
                             resizeMode='contain'
                             style={styles.video}
                         />
-                    </Pressable>
+                    </TouchableOpacity>
                 )}
             />
             <VideosModal

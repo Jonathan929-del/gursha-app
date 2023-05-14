@@ -1,5 +1,6 @@
 // Imports
-import React from 'react';
+import axios from 'axios';
+import {SERVER_API} from '@env';
 import Home from '../pages/Home';
 import Info from '../pages/Info';
 import Edit from '../pages/Edit';
@@ -9,7 +10,10 @@ import Profile from '../pages/Profile';
 import Register from '../pages/Register';
 import AddVideo from '../pages/AddVideo';
 import Following from '../pages/Following';
-import {IconButton} from 'react-native-paper';
+import {AuthContext} from '../context/Auth';
+import {Ionicons} from '@expo/vector-icons';
+import {FontAwesome} from '@expo/vector-icons';
+import {useState, useEffect, useContext} from 'react';
 import {Route, Link, Routes} from 'react-router-native';
 import {View, StyleSheet, Text, Dimensions} from 'react-native';
 
@@ -19,11 +23,57 @@ import {View, StyleSheet, Text, Dimensions} from 'react-native';
 
 // Main Function
 const Navbar = ({theme}) => {
+
+
+
+    // User
+    const {user} = useContext(AuthContext);
+
+
+    // Fetching posts
+    const [posts, setPosts] = useState([{}]);
+    const [playingVideoId, setPlayingVideoId] = useState('');
+    const postsFetcher = async e => {
+        try {
+        const link = `${SERVER_API}/posts/`;
+        const res = await axios.get(link);
+        const userVideosFilter = res.data.filter(post => user ? post.user !== user._id : post);
+        setPosts(userVideosFilter);
+        setPlayingVideoId(res.data[0]?._id);
+        } catch (err) {
+        console.log(err);
+        }
+    };
+
+
+
+    // Comment check
+    const [isCommentPosted, setIsCommentPosted] = useState(false);
+
+
+
+    // Use effect
+    useEffect(() => {
+        postsFetcher();
+    }, [isCommentPosted]);
+    useEffect(() => {
+        postsFetcher();
+    }, []);
+
+
+
     return (
         <View style={styles.container}>
             <View style={styles.content}>
                 <Routes>
-                    <Route exact path="/" element={<Home theme={theme} />} />
+                    <Route exact path="/" element={<Home
+                        theme={theme}
+                        posts={posts}
+                        isCommentPosted={isCommentPosted}
+                        setIsCommentPosted={setIsCommentPosted}
+                        playingVideoId={playingVideoId}
+                        setPlayingVideoId={setPlayingVideoId}
+                    />} />
                     <Route exact path="/following" element={<Following theme={theme} />} />
                     <Route path="/inbox" element={<Inbox theme={theme}/>} />
                     <Route path="/add" element={<AddVideo theme={theme} />} />
@@ -37,7 +87,7 @@ const Navbar = ({theme}) => {
             <View style={styles.nav}>
                 <Link to="/" style={styles.navItem}>
                     <View style={styles.tabContainer}>
-                        <IconButton icon='home' iconColor='#fff' size={30}/>
+                        <FontAwesome name="home" size={30} color="#fff" />
                         <Text style={styles.text}>Home</Text>
                     </View>
                 </Link>
@@ -48,13 +98,13 @@ const Navbar = ({theme}) => {
                 </Link>
                 <Link to="/inbox" style={styles.navItem}>
                     <View style={styles.tabContainer}>
-                        <IconButton icon='message-text' iconColor='#fff' size={30} />
+                        <FontAwesome name="inbox" size={30} color="#fff" />
                         <Text style={styles.text}>Inbox</Text>
                     </View>
                 </Link>
                 <Link to="/profile" style={styles.navItem}>
                     <View style={styles.tabContainer}>
-                        <IconButton icon='account' iconColor='#fff' size={30} />
+                        <Ionicons name="person" size={30} color="#fff" />
                         <Text style={styles.text}>Profile</Text>
                     </View>
                 </Link>
@@ -77,10 +127,8 @@ const styles = StyleSheet.create({
         height:Dimensions.get('screen').height - 100,
     },
     nav:{
-        height:50,
         width:'100%',
         display:'flex',
-        paddingBottom:10,
         borderTopWidth:1,
         borderColor:'#ccc',
         flexDirection:'row',
@@ -100,13 +148,11 @@ const styles = StyleSheet.create({
         justifyContent:'center'
     },
     text:{
-        color:'#fff',
         fontSize:10,
-        marginTop:-20
+        color:'#fff'
     },
     addVideoContainer:{
         width:65,
-        marginTop:5,
         display:'flex',
         borderRadius:10,
         textAlign:'center',

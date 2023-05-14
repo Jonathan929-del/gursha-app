@@ -4,7 +4,7 @@ import {SERVER_API} from '@env';
 import {AuthContext} from '../context/Auth';
 import {FormItem} from 'react-native-form-component';
 import {useState, useEffect, useContext} from 'react';
-import {StyleSheet, View, Text, Pressable, ScrollView, Keyboard} from 'react-native';
+import {StyleSheet, View, Text, ScrollView, Keyboard, Image, TouchableOpacity} from 'react-native';
 
 
 
@@ -45,7 +45,7 @@ const Comments = ({isCommentsOpened, setIsCommentsOpened, post, theme, setIsComm
     try {
       if(user){
         const link = `${SERVER_API}/posts/comment/${post?._id}`
-        const res = await axios.put(link, {userId:user?._id, body:input});
+        const res = await axios.put(link, {userId:user._id, body:input, profilePic:user.profilePic});
         setInput('');
         setIsCommentPosted(!isCommentPosted);
         console.log(res.data);
@@ -63,16 +63,21 @@ const Comments = ({isCommentsOpened, setIsCommentsOpened, post, theme, setIsComm
     <View style={[styles.container, {display:isCommentsOpened ? 'flex' : 'none'}]}>
       <View style={styles.top}>
         <Text style={styles.commentCount}>{post.commentsCount} comments</Text>
-        <Pressable style={styles.closeIconContainer} onPress={() => setIsCommentsOpened(false)}>
+        <TouchableOpacity style={styles.closeIconContainer} onPress={() => setIsCommentsOpened(false)}>
           <Text style={styles.closeIcon}>x</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
       <ScrollView style={styles.scrollView}>
         {post.comments?.map(comment => (
           <View style={styles.comment}>
-            <View style={styles.imageContainer}>
-
-            </View>
+            {comment?.profilePic ? (
+              <Image
+                source={{uri:comment.profilePic}}
+                style={styles.image}
+              />
+            ) : (
+              <View style={[styles.image, {backgroundColor:'#fff'}]}/>
+            )}
             <View style={styles.commentWrapper}>
               <Text style={styles.commentUsername}>{comment.username}</Text>
               <Text style={styles.commentText}>{comment.body}</Text>
@@ -82,13 +87,16 @@ const Comments = ({isCommentsOpened, setIsCommentsOpened, post, theme, setIsComm
       </ScrollView>
       {user && (
         <View style={[styles.inputContainer, {bottom:isKeyboardVisible ? keyboardHeight - 50 : 0, paddingVertical:isKeyboardVisible ? 30 : 10}]}>
-          <View style={styles.imageContainer}>
-
-          </View>
-          <FormItem style={styles.input} onChangeText={text => setInput(text)} value={input}/>
-          <Pressable style={styles.buttonContainer} onPress={commentPoster}>
-            <Text style={[styles.buttonText, {color:theme.colors.primary}]}>Post</Text>
-          </Pressable>
+          <Image
+            source={{uri:user.profilePic}}
+            style={styles.image}
+          />
+          <FormItem style={[styles.input, {width:input ? '70%' : '80%'}]} onChangeText={text => setInput(text)} value={input}/>
+          {input && (
+            <TouchableOpacity style={styles.buttonContainer} onPress={commentPoster}>
+              <Text style={[styles.buttonText, {color:theme.colors.primary}]}>Post</Text>
+            </TouchableOpacity>
+          )}
         </View>
       )}
     </View>
@@ -162,14 +170,12 @@ const styles = StyleSheet.create({
     backgroundColor:'#212124',
     justifyContent:'space-between'
   },
-  imageContainer:{
+  image:{
     width:50,
     height:50,
-    borderRadius:100,
-    backgroundColor:'#fff'
+    borderRadius:50
   },
   input:{
-    width:'70%',
     paddingLeft:10,
     marginBottom:0,
     borderRadius:50,

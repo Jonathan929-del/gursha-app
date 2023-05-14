@@ -8,7 +8,7 @@ import {Button} from 'react-native-paper';
 import {AuthContext} from '../context/Auth';
 import {useContext, useEffect, useState} from 'react';
 import VideosProfilePreview from '../components/VideosProfilePreview';
-import {StyleSheet, Text, View, ScrollView, Dimensions, Pressable, Image} from 'react-native';
+import {StyleSheet, Text, View, ScrollView, Dimensions, Image, TouchableOpacity} from 'react-native';
 
 
 
@@ -62,12 +62,12 @@ const Profile = ({theme}) => {
               <Text style={styles.bio}>{user.bio}</Text>
             </View>
             <View style={styles.actionsContainer}>
-              <Pressable onPress={() => {
+              <TouchableOpacity onPress={() => {
                 signOutHandler();
                 logout();
               }}>
                 <Text style={{color:theme.colors.primary}}>Logout</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
             <View style={styles.imageContainer}>
               <View style={styles.imageWrapper}>

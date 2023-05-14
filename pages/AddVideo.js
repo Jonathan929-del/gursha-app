@@ -6,11 +6,12 @@ import {Link} from 'react-router-native';
 import awsconfig from '../src/aws-exports';
 import {AuthContext} from '../context/Auth';
 import {Amplify, Storage} from 'aws-amplify';
+import {AntDesign} from '@expo/vector-icons';
+import {ProgressBar} from 'react-native-paper';
 import * as ImagePicker from 'expo-image-picker';
 import {useState, useRef, useContext} from 'react';
 import {FormItem} from 'react-native-form-component';
-import {IconButton, ProgressBar} from 'react-native-paper';
-import {Text, View, StyleSheet, TouchableOpacity, Pressable} from 'react-native';
+import {Text, View, StyleSheet, TouchableOpacity} from 'react-native';
 Amplify.configure(awsconfig);
 
 
@@ -23,7 +24,7 @@ const AddVideo = ({theme}) => {
 
 
   // Authenticated user
-  const {user, logout} = useContext(AuthContext);
+  const {user} = useContext(AuthContext);
 
 
 
@@ -134,7 +135,8 @@ const AddVideo = ({theme}) => {
           {videoPreview && (
             <View style={[styles.videoContainer, {borderColor:theme.colors.primary}]}>
               <TouchableOpacity onPress={() => setVideoPreview(null)} style={styles.closeIcon}>
-                <IconButton icon='close' iconColor='#fff'/>
+                {/* <IconButton icon='close' iconColor='#fff'/> */}
+                <AntDesign name="close" size={30} color="#fff" />
               </TouchableOpacity>
               <Video
                 ref={videoRef}
@@ -161,9 +163,6 @@ const AddVideo = ({theme}) => {
                 </TouchableOpacity>
               </>
             )}
-            <Pressable onPress={logout}>
-              <Text></Text>
-            </Pressable>
             <TouchableOpacity style={[styles.addVideo, {backgroundColor:theme.colors.primary}]} onPress={videoPreview ? postVideo : pickVideo}>
               <Text style={styles.addText}>{videoPreview ? 'Publish video' : 'Add video'}</Text>
               {!videoPreview && <Text style={styles.addIcon}>+</Text>}
@@ -256,6 +255,8 @@ const styles = StyleSheet.create({
   closeIcon:{
     zIndex:10,
     width:'100%',
+    paddingTop:5,
+    paddingRight:5,
     display:'flex',
     position:'absolute',
     alignItems:'flex-end'

@@ -3,11 +3,12 @@ import axios from 'axios';
 import {SERVER_API} from '@env';
 import Post from '../components/Post';
 import {Link} from 'react-router-native';
+import {Entypo} from '@expo/vector-icons';
 import {AuthContext} from '../context/Auth';
 import PagerView from 'react-native-pager-view';
+import {ActivityIndicator} from 'react-native-paper';
 import {useContext, useEffect, useState} from 'react';
-import {IconButton, ActivityIndicator} from 'react-native-paper';
-import {Text, View, StyleSheet, Dimensions, Pressable} from 'react-native';
+import {Text, View, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
 
 
 
@@ -73,15 +74,19 @@ const Following = ({theme}) => {
         <View style={styles.container}>
           <View style={styles.topbar}>
               <View style={styles.pages}>
-                <Pressable onPress={() => setIsVideoPlaying(true)}>
+                <TouchableOpacity onPress={() => setIsVideoPlaying(true)}>
                   <Text style={styles.selectedPage}>Following</Text>
-                </Pressable>
-                <Pressable onPress={() => setIsVideoPlaying(true)}>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setIsVideoPlaying(true)}>
                   <Link to='/' underlayColor='transparent'>
                     <Text style={styles.page}>For You</Text>
                   </Link>
-                </Pressable>
-                <IconButton style={styles.searchIcon} icon='magnify' size={30} iconColor='#fff'/>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.searchIcon}
+                >
+                  <Entypo name="magnifying-glass" size={30} color="#fff" />
+                </TouchableOpacity>
               </View>
             </View>
             <PagerView
@@ -161,8 +166,8 @@ const styles = StyleSheet.create({
     textDecorationLine:'underline'
   },
   searchIcon:{
-    top:32,
-    right:-100,
+    top:40,
+    right:-90,
     position:'absolute'
   },
 });

@@ -3,10 +3,10 @@ import axios from 'axios';
 import {SERVER_API} from '@env';
 import {Button} from 'react-native-paper';
 import {AuthContext} from '../context/Auth';
-import {IconButton} from 'react-native-paper';
+import {AntDesign} from '@expo/vector-icons';
 import {useContext, useEffect, useState} from 'react';
 import VideosProfilePreview from '../components/VideosProfilePreview';
-import {Text, Modal, View, Pressable, StyleSheet, Dimensions, ScrollView, Image} from 'react-native';
+import {Text, Modal, View, StyleSheet, Dimensions, ScrollView, Image, TouchableOpacity} from 'react-native';
 
 
 
@@ -62,9 +62,9 @@ const AnotherUserProfile = ({isUserModalOpened, setIsUserModalOpened, user, them
         user &&
         <Modal visible={isUserModalOpened}>
             <View style={styles.container}>
-                <Pressable onPress={() => setIsUserModalOpened(false)} style={styles.backButton}>
-                    <IconButton icon='arrow-left' iconColor='#fff'/>
-                </Pressable>
+                <TouchableOpacity onPress={() => setIsUserModalOpened(false)} style={styles.backButton}>
+                    <AntDesign name="arrowleft" size={30} color="#fff" />
+                </TouchableOpacity>
                 <ScrollView>
                     <View style={styles.bioContainer}>
                         <Text style={styles.bio}>{user.bio}</Text>
@@ -124,6 +124,8 @@ const styles = StyleSheet.create({
     backButton:{
         zIndex:1,
         width:'100%',
+        paddingLeft:10,
+        paddingVertical:5,
         borderColor:'#ccc',
         position:'absolute',
         borderBottomWidth:0.5,

@@ -7,6 +7,7 @@ import {useContext, useState} from 'react';
 import {AuthContext} from '../context/Auth';
 import {doc, setDoc} from "firebase/firestore";
 import {useNavigate} from 'react-router-native';
+import {ActivityIndicator} from 'react-native-paper';
 import {createUserWithEmailAndPassword} from 'firebase/auth';
 import {Text, View, StyleSheet, ScrollView} from 'react-native';
 import {Form, FormItem, Label} from 'react-native-form-component';
@@ -22,6 +23,7 @@ const Register = ({theme}) => {
     // Values
     const navigate = useNavigate();
     const [isClicked, setIsClicked] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const context = useContext(AuthContext);
     const [errors, setErrors] = useState({});
     const [values, setValues] = useState({
@@ -34,10 +36,13 @@ const Register = ({theme}) => {
 
     // Registering user
     const registerUser = async () => {
+        setIsLoading(true);
         try {
+            setErrors({});
             const link = `${SERVER_API}/users/register`;
             const res = await axios.post(link, values);
             setIsClicked(true);
+            setIsLoading(false);
             context.login(res.data);
 
 
@@ -64,9 +69,11 @@ const Register = ({theme}) => {
                 navigate('/info');
             }, 1000);
         } catch (err) {
-            setErrors(err);
+            setErrors(err.response.data);
+            setIsLoading(false);
         }
     };
+
 
 
     return (
@@ -111,9 +118,12 @@ const Register = ({theme}) => {
                     />
                     {errors.confirmPassword && <Label text={errors.confirmPassword} style={styles.errorMessage} textStyle={styles.errorText}/>}
                 </Form>
+                {isLoading && (
+                    <ActivityIndicator animating={true} color='#fff' size={50}/>
+                )}
                 {isClicked && (
                     <View style={styles.loginUser}>
-                        <Text style={styles.loginUserText}>Login user...</Text>
+                        <Text style={styles.loginUserText}>Loging user...</Text>
                     </View>
                 )}
             </ScrollView>

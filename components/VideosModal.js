@@ -1,9 +1,9 @@
 // Imports
 import Post from './Post';
 import {useState} from 'react';
-import {IconButton} from 'react-native-paper';
+import {AntDesign} from '@expo/vector-icons';
 import PagerView from 'react-native-pager-view';
-import {Modal, View, StyleSheet, Dimensions, Pressable, Text} from 'react-native';
+import {Modal, View, StyleSheet, Dimensions, Text, TouchableOpacity} from 'react-native';
 
 
 
@@ -32,10 +32,14 @@ const VideosModal = ({posts, theme, isVideosModalOpened, setIsVideosModalOpened}
   return (
     <Modal visible={isVideosModalOpened}>
         <View style={styles.container}>
-            <Pressable onPress={() => setIsVideosModalOpened(false)} style={styles.backButton}>
-                <IconButton icon='arrow-left' iconColor='#fff'/>
+            <View style={styles.backButton}>
+                <TouchableOpacity
+                    onPress={() => setIsVideosModalOpened(false)} 
+                >
+                    <AntDesign name="arrowleft" size={30} color="#fff" />
+                </TouchableOpacity>
                 <Text style={styles.username}>{posts[0]?.username}</Text>
-            </Pressable>
+            </View>
             <PagerView
                 style={styles.pagerView}
                 scrollEnabled
@@ -82,8 +86,11 @@ const styles = StyleSheet.create({
       zIndex:1,
       width:'100%',
       display:'flex',
+      paddingLeft:10,
+      paddingVertical:5,
       borderColor:'#ccc',
       flexDirection:'row',
+      alignItems:'center',
       position:'absolute',
       borderBottomWidth:0.5,
       backgroundColor:'#000'
@@ -91,7 +98,6 @@ const styles = StyleSheet.create({
     username:{
       color:'#fff',
       width:'100%',
-      paddingTop:18,
       paddingRight:50,
       textAlign:'center'
     },

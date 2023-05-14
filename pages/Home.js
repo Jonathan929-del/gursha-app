@@ -1,20 +1,19 @@
 // Imports
-import axios from 'axios';
-import {SERVER_API} from '@env';
 import Post from '../components/Post';
 import {Link} from 'react-router-native';
+import {Entypo} from '@expo/vector-icons';
+import {useContext, useState} from 'react';
 import {AuthContext} from '../context/Auth';
 import PagerView from 'react-native-pager-view';
-import {useContext, useEffect, useState} from 'react';
-import {IconButton, ActivityIndicator} from 'react-native-paper';
-import {Text, View, StyleSheet, Dimensions, Pressable} from 'react-native';
+import {ActivityIndicator} from 'react-native-paper';
+import {Text, View, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
 
 
 
 
 
 // Main Function
-const Home = ({theme}) => {
+const Home = ({theme, posts, isCommentPosted, setIsCommentPosted, playingVideoId, setPlayingVideoId}) => {
 
 
 
@@ -24,24 +23,7 @@ const Home = ({theme}) => {
 
 
   // Video
-  const [playingVideoId, setPlayingVideoId] = useState('');
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
-
-
-
-  // Fetching posts
-  const [posts, setPosts] = useState([{}]);
-  const postsFetcher = async e => {
-    try {
-      const link = `${SERVER_API}/posts/`;
-      const res = await axios.get(link);
-      const userVideosFilter = res.data.filter(post => user ? post.user !== user._id : post);
-      setPosts(userVideosFilter);
-      setPlayingVideoId(res.data[0]?._id);
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
 
 
@@ -52,36 +34,24 @@ const Home = ({theme}) => {
   };
 
 
-
-  // Comment check
-  const [isCommentPosted, setIsCommentPosted] = useState(false);
-
-
-
-  // Use effect
-  useEffect(() => {
-    postsFetcher();
-  }, [isCommentPosted]);
-  useEffect(() => {
-    postsFetcher();
-  }, []);
-
-
+  
   return (
       posts[0]?._id ? (
         <View style={styles.container}>
           <View style={styles.topbar}>
             {user && (              
               <View style={styles.pages}>
-                <Pressable onPress={() => setIsVideoPlaying(true)}>
+                <TouchableOpacity onPress={() => setIsVideoPlaying(true)}>
                   <Link to='/following' underlayColor='transparent'>
                     <Text style={styles.page}>Following</Text>
                   </Link>
-                </Pressable>
-                <Pressable onPress={() => setIsVideoPlaying(true)}>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setIsVideoPlaying(true)}>
                   <Text style={styles.selectedPage}>For You</Text>
-                </Pressable>
-                <IconButton style={styles.searchIcon} icon='magnify' size={30} iconColor='#fff'/>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.searchIcon}>
+                  <Entypo name="magnifying-glass" size={30} color="#fff" />
+                </TouchableOpacity>
               </View>
             )}
             </View>
@@ -161,8 +131,8 @@ const styles = StyleSheet.create({
     textDecorationLine:'underline'
   },
   searchIcon:{
-    top:32,
-    right:-100,
+    top:40,
+    right:-90,
     position:'absolute'
   },
 });
