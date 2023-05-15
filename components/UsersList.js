@@ -65,20 +65,23 @@ const UsersList = ({theme}) => {
                 : id + registeredUser._id;
             const res = await getDoc(doc(db, 'chats', combinedId));
             if(!res.exists()){
-                await setDoc(doc(db, 'chats', combinedId), {messages:[]});
-                await updateDoc(doc(db, 'userChats', registeredUser._id), {
-                    [combinedId+'.userInfo']:{
-                        id:id ? id : searchedUser._id,
-                        username:username ? username : searchedUser.username
-                    },
-                    [combinedId+'.date']:serverTimestamp()
-                });
-                await updateDoc(doc(db, 'userChats', id ? id : searchedUser._id), {
-                    [combinedId+'.userInfo']:{
-                        id:registeredUser._id,
-                        username:registeredUser.username
-                    },
-                    [combinedId+'.date']:serverTimestamp()
+                console.log('Excuting...');
+                setDoc(doc(db, 'chats', combinedId), {messages:[]}).then(() => {
+                    updateDoc(doc(db, 'userChats', registeredUser._id), {
+                        [combinedId+'.userInfo']:{
+                            id:id ? id : searchedUser._id,
+                            username:username ? username : searchedUser.username
+                        },
+                        [combinedId+'.date']:serverTimestamp()
+                    });
+                    updateDoc(doc(db, 'userChats', id ? id : searchedUser._id), {
+                        [combinedId+'.userInfo']:{
+                            id:registeredUser._id,
+                            username:registeredUser.username
+                        },
+                        [combinedId+'.date']:serverTimestamp()
+                    });
+                    console.log('Function excuted.');
                 });
             };
             setIsChatOpened(true);
@@ -117,7 +120,7 @@ const UsersList = ({theme}) => {
     // Use effect
     useEffect(() => {
         fetchUsers();
-    }, [chats]);
+    }, []);
 
 
 
@@ -162,10 +165,14 @@ const UsersList = ({theme}) => {
             </TouchableOpacity>
             {isUserSearched && (
                 <TouchableOpacity style={styles.searchedUser} onPress={selectUser}>
-                    <Image
-                        source={{uri:searchedUser.profilePic}}
-                        style={styles.image}
-                    />
+                    {searchedUser?.profilePic ? (
+                        <Image
+                            source={{uri:searchedUser.profilePic}}
+                            style={styles.image}
+                        />
+                    ) : (
+                        <View style={[styles.image, {backgroundColor:'#fff'}]}/>
+                    )}
                     <View style={styles.texts}>
                         <Text style={styles.username}>{searchedUser.username}</Text>
                     </View>

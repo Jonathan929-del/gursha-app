@@ -42,7 +42,7 @@ const AnotherUserProfile = ({isUserModalOpened, setIsUserModalOpened, user, them
             const link = `${SERVER_API}/users/follow/${user._id}`
             const res = await axios.put(link, {followerId:registeredUser._id});
             setIsFollowIconVisible(!isFollowIconVisible);
-            update({newFollowing:user._id});
+            update({newFollowing:user._id, bio:registeredUser.bio, profilePic:registeredUser.profilePic, isFollow:res.data === 'User followed' ? true : false});
         } catch (err) {
             console.log(err);
         }
@@ -70,10 +70,16 @@ const AnotherUserProfile = ({isUserModalOpened, setIsUserModalOpened, user, them
                         <Text style={styles.bio}>{user.bio}</Text>
                     </View>
                     <View style={styles.imageContainer}>
-                        <Image
-                            source={{uri:user.profilePic}}
-                            style={styles.image}
-                        />
+                        {user?.profilePic ? (
+                            <Image
+                                source={{uri:user.profilePic}}
+                                style={styles.image}
+                            />
+                        ) : (
+                            <View
+                                style={[styles.image, {backgroundColor:'#fff'}]}
+                            />
+                        )}
                     </View>
                     <View style={styles.nameContainer}>
                         <Text style={styles.name}>{user.username}</Text>

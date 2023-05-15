@@ -64,7 +64,7 @@ const Post = ({post, playingVideoId, isVideoPlaying, setIsVideoPlaying, theme, s
             const link = `${SERVER_API}/users/follow/${id}`
             const res = await axios.put(link, {followerId:user?._id});
             setIsFollowIconVisible(false);
-            update({newFollowing:id});
+            update({newFollowing:id, bio:user.bio, profilePic:user.profilePic, isFollow:res.data === 'User followed' ? true : false});
         } catch (err) {
             console.log(err);
         }
@@ -137,16 +137,20 @@ const Post = ({post, playingVideoId, isVideoPlaying, setIsVideoPlaying, theme, s
                             <View style={styles.interactions}>
                                 {!fromProfile && (
                                     <View style={styles.userProfile}>
-                                        <View>
+                                        {postUser?.profilePic ? (
                                             <TouchableOpacity onPress={() => setIsUserModalOpened(true)}>
                                                 <Avatar.Image source={{uri:postUser?.profilePic}}/>
                                             </TouchableOpacity>
-                                            {user && post.user !== user?._id && isFollowIconVisible && !fromFollowing && (
-                                                <TouchableOpacity onPress={() => followHandler(post.user)}>
-                                                    <Avatar.Icon icon='plus' size={25} style={styles.followIcon}/>
-                                                </TouchableOpacity>
-                                            )}
-                                        </View>
+                                        ) : (
+                                            <TouchableOpacity onPress={() => setIsUserModalOpened(true)}>
+                                                <View style={styles.noBackground}/>
+                                            </TouchableOpacity>
+                                        )}
+                                        {user && post.user !== user?._id && isFollowIconVisible && !fromFollowing && (
+                                            <TouchableOpacity onPress={() => followHandler(post.user)} style={[styles.followButtonContainer, {backgroundColor:theme.colors.primary}]}>
+                                                <AntDesign name="plus" size={20} color="#fff" />
+                                            </TouchableOpacity>
+                                        )}
                                     </View>
                                 )}
                                 <View style={styles.itemContainer}>
@@ -206,6 +210,16 @@ const styles = StyleSheet.create({
         height:Dimensions.get('screen').height,
         width:Dimensions.get('screen').width + 100
     },
+    followButtonContainer:{
+        width:25,
+        height:25,
+        bottom:0,
+        display:'flex',
+        borderRadius:20,
+        alignItems:'center',
+        position:'absolute',
+        justifyContent:'center'
+    },
     content:{
         height:'100%',
         display:'flex',
@@ -235,6 +249,12 @@ const styles = StyleSheet.create({
         fontSize:15,
         color:'#fff',
         paddingBottom:5
+    },
+    noBackground:{
+        width:50,
+        height:50,
+        borderRadius:50,
+        backgroundColor:'#fff'
     },
     description:{
         fontSize:12,

@@ -49,6 +49,7 @@ const Profile = ({theme}) => {
   useEffect(() => {
     postsFetcher();
   }, []);
+  console.log(user);
 
 
 
@@ -82,15 +83,15 @@ const Profile = ({theme}) => {
             </View>
             <View style={styles.bar}>
               <View style={styles.item}>
-                <Text style={styles.number}>{user.followingCount || 0}</Text>
+                <Text style={styles.number}>{user.followingCount}</Text>
                 <Text style={styles.category}>Following</Text>
               </View>
               <View style={styles.item}>
-                <Text style={styles.number}>{user.followersCount || 0}</Text>
+                <Text style={styles.number}>{user.followersCount}</Text>
                 <Text style={styles.category}>Followers</Text>
               </View>
               <View style={styles.item}>
-                <Text style={styles.number}>{user.likesCount || 0}</Text>
+                <Text style={styles.number}>{user.likesCount}</Text>
                 <Text style={styles.category}>Likes</Text>
               </View>
             </View>

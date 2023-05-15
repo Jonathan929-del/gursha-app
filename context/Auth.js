@@ -59,6 +59,8 @@ const AuthReducer = (state, action) => {
                 user:action.payload
             }
         case 'UPDATE':
+
+            // Followings
             let followingArray = state.user.following;
             const userId = action.payload.newFollowing;
             if(followingArray?.includes(userId)){
@@ -67,9 +69,14 @@ const AuthReducer = (state, action) => {
             }else{
                 followingArray.push(userId);
             }
+
+            // Follow count
+            const isFollow = action.payload.isFollow;
+
+            
             return {
                 ...state,
-                user:{...state.user, bio:action.payload.bio, profilePic:action.payload.profilePic, following:followingArray}
+                user:{...state.user, bio:action.payload.bio, profilePic:action.payload.profilePic, following:followingArray, followingCount:isFollow ? state.user.followingCount + 1 : state.user.followingCount - 1}
             };
         case 'LOGOUT':
             return{
@@ -99,11 +106,11 @@ const AuthProvider = props => {
             console.log(err);
         }
     };
-    const update = async ({bio, profilePic, newFollowing}) => {
+    const update = async ({bio, profilePic, newFollowing, isFollow}) => {
         try {
             dispatch({
                 type:'UPDATE',
-                payload:{bio, profilePic, newFollowing}
+                payload:{bio, profilePic, newFollowing, isFollow}
             });
         } catch (err) {
             console.log(err);
