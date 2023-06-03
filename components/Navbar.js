@@ -6,13 +6,15 @@ import Info from '../pages/Info';
 import Edit from '../pages/Edit';
 import Inbox from '../pages/Inbox';
 import Login from '../pages/Login';
+import Search from '../pages/Search';
 import Profile from '../pages/Profile';
 import Register from '../pages/Register';
 import AddVideo from '../pages/AddVideo';
-import Following from '../pages/Following';
+import {Entypo} from '@expo/vector-icons';
 import {AuthContext} from '../context/Auth';
 import {Ionicons} from '@expo/vector-icons';
 import {FontAwesome} from '@expo/vector-icons';
+import FollowingPage from '../pages/FollowingPage';
 import {useState, useEffect, useContext} from 'react';
 import {Route, Link, Routes} from 'react-router-native';
 import {View, StyleSheet, Text, Dimensions} from 'react-native';
@@ -55,7 +57,7 @@ const Navbar = ({theme}) => {
     // Use effect
     useEffect(() => {
         postsFetcher();
-    }, [isCommentPosted]);
+    }, [isCommentPosted, user]);
     useEffect(() => {
         postsFetcher();
     }, []);
@@ -74,7 +76,13 @@ const Navbar = ({theme}) => {
                         playingVideoId={playingVideoId}
                         setPlayingVideoId={setPlayingVideoId}
                     />} />
-                    <Route exact path="/following" element={<Following theme={theme} />} />
+                    <Route path="/search" element={<Search
+                        theme={theme}
+                        posts={posts}
+                        isCommentPosted={isCommentPosted}
+                        setIsCommentPosted={setIsCommentPosted}
+                    />} />
+                    <Route exact path="/following" element={<FollowingPage theme={theme} />} />
                     <Route path="/inbox" element={<Inbox theme={theme}/>} />
                     <Route path="/add" element={<AddVideo theme={theme} />} />
                     <Route path="/profile" element={<Profile theme={theme} />} />
@@ -89,6 +97,12 @@ const Navbar = ({theme}) => {
                     <View style={styles.tabContainer}>
                         <FontAwesome name="home" size={30} color="#fff" />
                         <Text style={styles.text}>Home</Text>
+                    </View>
+                </Link>
+                <Link to="/search" style={styles.navItem}>
+                    <View style={styles.tabContainer}>
+                        <Entypo name="magnifying-glass" size={30} color="#fff" />
+                        <Text style={styles.text}>Search</Text>
                     </View>
                 </Link>
                 <Link to="/add" style={styles.navItem}>

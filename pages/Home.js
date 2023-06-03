@@ -17,11 +17,6 @@ const Home = ({theme, posts, isCommentPosted, setIsCommentPosted, playingVideoId
 
 
 
-  // User
-  const {user} = useContext(AuthContext);
-
-
-
   // Video
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
 
@@ -39,21 +34,19 @@ const Home = ({theme, posts, isCommentPosted, setIsCommentPosted, playingVideoId
       posts[0]?._id ? (
         <View style={styles.container}>
           <View style={styles.topbar}>
-            {user && (              
-              <View style={styles.pages}>
-                <TouchableOpacity onPress={() => setIsVideoPlaying(true)}>
-                  <Link to='/following' underlayColor='transparent'>
-                    <Text style={styles.page}>Following</Text>
-                  </Link>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setIsVideoPlaying(true)}>
-                  <Text style={styles.selectedPage}>For You</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.searchIcon}>
-                  <Entypo name="magnifying-glass" size={30} color="#fff" />
-                </TouchableOpacity>
-              </View>
-            )}
+            <View style={styles.pages}>
+              <TouchableOpacity onPress={() => setIsVideoPlaying(true)}>
+                <Link to='/following' underlayColor='transparent'>
+                  <Text style={styles.page}>Following</Text>
+                </Link>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setIsVideoPlaying(true)}>
+                <Text style={styles.selectedPage}>For You</Text>
+              </TouchableOpacity>
+              <Link style={styles.searchIcon} to='/search' underlayColor='transparent'>
+                <Entypo name="magnifying-glass" size={30} color="#fff" />
+              </Link>
+            </View>
             </View>
             <PagerView
               style={styles.pagerView}

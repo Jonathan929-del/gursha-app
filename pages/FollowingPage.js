@@ -15,7 +15,7 @@ import {Text, View, StyleSheet, Dimensions, TouchableOpacity} from 'react-native
 
 
 // Main Function
-const Following = ({theme}) => {
+const FollowingPage = ({theme}) => {
 
 
 
@@ -70,55 +70,67 @@ const Following = ({theme}) => {
 
 
   return (
+    registeredUser ? (
       posts[0]?._id ? (
         <View style={styles.container}>
-          <View style={styles.topbar}>
-              <View style={styles.pages}>
-                <TouchableOpacity onPress={() => setIsVideoPlaying(true)}>
-                  <Text style={styles.selectedPage}>Following</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setIsVideoPlaying(true)}>
-                  <Link to='/' underlayColor='transparent'>
-                    <Text style={styles.page}>For You</Text>
-                  </Link>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.searchIcon}
-                >
-                  <Entypo name="magnifying-glass" size={30} color="#fff" />
-                </TouchableOpacity>
+            <View style={styles.topbar}>
+                <View style={styles.pages}>
+                  <TouchableOpacity onPress={() => setIsVideoPlaying(true)}>
+                    <Text style={styles.selectedPage}>Following</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => setIsVideoPlaying(true)}>
+                    <Link to='/' underlayColor='transparent'>
+                      <Text style={styles.page}>For You</Text>
+                    </Link>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.searchIcon}
+                  >
+                    <Entypo name="magnifying-glass" size={30} color="#fff" />
+                  </TouchableOpacity>
+                </View>
               </View>
+              <PagerView
+                style={styles.pagerView}
+                scrollEnabled
+                orientation='vertical'
+                onPageSelected={e => {
+                  videoSwitcher(e);
+                }}
+              >
+                {posts?.map(post => (
+                    <>
+                      <Post
+                          post={post}
+                          isVideoPlaying={isVideoPlaying}
+                          playingVideoId={playingVideoId}
+                          setIsVideoPlaying={setIsVideoPlaying}
+                          theme={theme}
+                          setIsCommentPosted={setIsCommentPosted}
+                          isCommentPosted={isCommentPosted}
+                          fromFollowing={true}
+                        />
+                    </>
+                ))}
+              </PagerView>
             </View>
-            <PagerView
-              style={styles.pagerView}
-              scrollEnabled
-              orientation='vertical'
-              onPageSelected={e => {
-                videoSwitcher(e);
-              }}
-            >
-              {posts?.map(post => (
-                  <>
-                    <Post
-                        post={post}
-                        isVideoPlaying={isVideoPlaying}
-                        playingVideoId={playingVideoId}
-                        setIsVideoPlaying={setIsVideoPlaying}
-                        theme={theme}
-                        setIsCommentPosted={setIsCommentPosted}
-                        isCommentPosted={isCommentPosted}
-                        fromFollowing={true}
-                      />
-                  </>
-              ))}
-            </PagerView>
-          </View>
-        ) : (
-          <View style={styles.progressContainer}>
-            <ActivityIndicator animating={true} color='#fff' size={50}/>
-          </View>
-        )
+            ) : (
+              <View style={styles.progressContainer}>
+                <ActivityIndicator animating={true} color='#fff' size={50}/>
+              </View>
+            )
+    ) : (
+      <View style={styles.authenticatedContainer}>
+        <Text style={{color:'#fff'}}>Login to see your friends videos..</Text>
+        <Link to='/register'>
+          <Text style={{marginBottom:15, marginTop:30, color:theme.colors.primary}}>Register</Text>
+        </Link>
+        <Link to='/login'>
+          <Text style={{color:theme.colors.primary}}>Login</Text>
+        </Link>
+      </View>
     )
+  );
 };
 
 
@@ -131,6 +143,12 @@ const styles = StyleSheet.create({
   container:{
     backgroundColor:'#000',
     height:Dimensions.get('screen').height - 100
+  },
+  authenticatedContainer:{
+    display:'flex',
+    alignItems:'center',
+    justifyContent:'center',
+    height:Dimensions.get('screen').height
   },
   pagerView:{
     flex:1
@@ -178,4 +196,4 @@ const styles = StyleSheet.create({
 
 
 // Export
-export default Following;
+export default FollowingPage;

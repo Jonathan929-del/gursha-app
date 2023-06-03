@@ -10,7 +10,7 @@ import {Modal, View, StyleSheet, Dimensions, Text, TouchableOpacity} from 'react
 
 
 // Main function
-const VideosModal = ({posts, theme, isVideosModalOpened, setIsVideosModalOpened}) => {
+const VideosModal = ({posts, theme, isVideosModalOpened, setIsVideosModalOpened, isCommentPosted, setIsCommentPosted}) => {
 
 
 
@@ -21,11 +21,6 @@ const VideosModal = ({posts, theme, isVideosModalOpened, setIsVideosModalOpened}
     setPlayingVideoId(posts[e.nativeEvent.position]._id);
     setIsVideoPlaying(true);
   };
-
-
-
-  // Comment check
-  const [isCommentPosted, setIsCommentPosted] = useState(false);
 
 
 

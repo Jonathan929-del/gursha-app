@@ -10,14 +10,14 @@ import {StyleSheet, View,  Dimensions, TouchableOpacity} from 'react-native';
 
 
 // Main function
-const VideosProfilePreview = ({posts, theme}) => {
+const VideosProfilePreview = ({posts, theme, isCommentPosted, setIsCommentPosted}) => {
+
 
 
     // Videos modal opening
     const [isVideosModalOpened, setIsVideosModalOpened] = useState(false);
-    const videosModalOpener = id => {
-        setIsVideosModalOpened(true);
-    };
+
+
 
     return (
         <View>
@@ -27,7 +27,7 @@ const VideosProfilePreview = ({posts, theme}) => {
                 staticDimension={Dimensions.get('screen').width}
                 spacing={0}
                 renderItem={({item}) => (
-                    <TouchableOpacity style={styles.itemContainer} onPress={() => videosModalOpener(item._id)}>
+                    <TouchableOpacity style={styles.itemContainer} onPress={() => setIsVideosModalOpened(true)}>
                         <Video
                             source={{uri:item.video}}
                             resizeMode='contain'
@@ -41,6 +41,8 @@ const VideosProfilePreview = ({posts, theme}) => {
                 theme={theme}
                 isVideosModalOpened={isVideosModalOpened}
                 setIsVideosModalOpened={setIsVideosModalOpened}
+                isCommentPosted={isCommentPosted}
+                setIsCommentPosted={setIsCommentPosted}
             />
         </View>
     );
@@ -62,10 +64,6 @@ const styles = StyleSheet.create({
         borderWidth:0.2,
         borderColor:'#ccc',
         justifyContent:'flex-end'
-    },
-    itemName: {
-        fontSize:14,
-        color:'#fff'
     },
     video:{
         height:220

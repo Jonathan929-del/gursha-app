@@ -12,7 +12,7 @@ import {Modal, View, StyleSheet, Image, Text, TextInput, ScrollView, TouchableOp
 
 
 // Main Function
-const Chat = ({isChatOpened, setIsChatOpened, searchedUser, theme, setIsUserSearched}) => {
+const Chat = ({isChatOpened, setIsChatOpened, searchedUser, theme, setIsUserSearched, isProfile}) => {
 
 
   // Text input
@@ -62,7 +62,7 @@ const Chat = ({isChatOpened, setIsChatOpened, searchedUser, theme, setIsUserSear
             <TouchableOpacity
               onPress={() => {
                 setIsChatOpened(false);
-                setIsUserSearched(false);
+                !isProfile && setIsUserSearched(false);
               }}
               style={styles.backIcon}
             >

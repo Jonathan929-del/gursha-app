@@ -65,7 +65,6 @@ const UsersList = ({theme}) => {
                 : id + registeredUser._id;
             const res = await getDoc(doc(db, 'chats', combinedId));
             if(!res.exists()){
-                console.log('Excuting...');
                 setDoc(doc(db, 'chats', combinedId), {messages:[]}).then(() => {
                     updateDoc(doc(db, 'userChats', registeredUser._id), {
                         [combinedId+'.userInfo']:{
@@ -81,7 +80,6 @@ const UsersList = ({theme}) => {
                         },
                         [combinedId+'.date']:serverTimestamp()
                     });
-                    console.log('Function excuted.');
                 });
             };
             setIsChatOpened(true);
@@ -183,10 +181,16 @@ const UsersList = ({theme}) => {
                     users[0]?.username
                         ? users?.map(user => (
                             <TouchableOpacity style={styles.user} key={user?._id} onPress={() => {setSearchedUser(user);selectUser({id:user._id, username:user.username})}}>
-                                <Image
-                                    source={{uri:user?.profilePic}}
-                                    style={styles.image}
-                                />
+                                {user?.profilePic ? (
+                                    <Image
+                                        source={{uri:user?.profilePic}}
+                                        style={styles.image}
+                                    />
+                                ) : (
+                                    <View
+                                        style={[styles.image, {backgroundColor:'#fff'}]}
+                                    />
+                                )}
                                 <View style={styles.texts}>
                                     <Text style={styles.username}>{user?.username}</Text>
                                 </View>
@@ -197,7 +201,7 @@ const UsersList = ({theme}) => {
                                 <ActivityIndicator animating={true} color='#fff' size={50}/>
                             </View>
                         )
-                    : <Text style={{color:'#fff', width:'100%', textAlign:'center', fontSize:18, marginTop:50}}>Search your friends!</Text>
+                    : <Text style={{color:'#fff', width:'100%', textAlign:'center', fontSize:18, marginTop:50}}>Search other users...</Text>
                 }
             </View>
         </View>
@@ -274,11 +278,6 @@ const styles = StyleSheet.create({
     username:{
         fontSize:15,
         color:'#fff'
-    },
-    dots:{
-        fontSize:18,
-        color:'#ccc',
-        marginTop:-7
     }
 });
 

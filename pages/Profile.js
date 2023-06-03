@@ -6,6 +6,8 @@ import {signOut} from 'firebase/auth';
 import {Link} from 'react-router-native';
 import {Button} from 'react-native-paper';
 import {AuthContext} from '../context/Auth';
+import Following from '../components/Following';
+import Followers from '../components/Followers';
 import {useContext, useEffect, useState} from 'react';
 import VideosProfilePreview from '../components/VideosProfilePreview';
 import {StyleSheet, Text, View, ScrollView, Dimensions, Image, TouchableOpacity} from 'react-native';
@@ -21,6 +23,14 @@ const Profile = ({theme}) => {
 
   // User
   const {user, logout} = useContext(AuthContext);
+  const [isCommentPosted, setIsCommentPosted] = useState(false);
+
+
+
+  // Following and followers pages
+  const [isFollowingOpened, setIsFollowingOpened] = useState(false);
+  const [isFollowersOpened, setIsFollowersOpened] = useState(false);
+  const [likesCount, setLikesCount] = useState();
 
 
 
@@ -38,6 +48,10 @@ const Profile = ({theme}) => {
       const link = `${SERVER_API}/posts/${user?._id}`;
       const res = await axios.get(link);
       setPosts(res.data);
+      let likes = [];
+      res.data.forEach(post => likes.push(post.likesCount));
+      const sum = likes.reduce((accumulator, value) => accumulator + value, 0);
+      setLikesCount(sum);
     } catch (err) {
       console.log(err);
     }
@@ -49,7 +63,9 @@ const Profile = ({theme}) => {
   useEffect(() => {
     postsFetcher();
   }, []);
-  console.log(user);
+  useEffect(() => {
+    postsFetcher();
+  }, [isCommentPosted]);
 
 
 
@@ -82,16 +98,16 @@ const Profile = ({theme}) => {
               <Text style={styles.name}>{user.username}</Text>
             </View>
             <View style={styles.bar}>
-              <View style={styles.item}>
+              <TouchableOpacity style={styles.item} onPress={() => setIsFollowingOpened(true)}>
                 <Text style={styles.number}>{user.followingCount}</Text>
                 <Text style={styles.category}>Following</Text>
-              </View>
-              <View style={styles.item}>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.item} onPress={() => setIsFollowersOpened(true)}>
                 <Text style={styles.number}>{user.followersCount}</Text>
                 <Text style={styles.category}>Followers</Text>
-              </View>
+              </TouchableOpacity>
               <View style={styles.item}>
-                <Text style={styles.number}>{user.likesCount}</Text>
+                <Text style={styles.number}>{likesCount}</Text>
                 <Text style={styles.category}>Likes</Text>
               </View>
             </View>
@@ -105,6 +121,20 @@ const Profile = ({theme}) => {
             <Text style={styles.hr}>-</Text>
             <VideosProfilePreview
               posts={posts}
+              theme={theme}
+              isCommentPosted={isCommentPosted}
+              setIsCommentPosted={setIsCommentPosted}
+            />
+            <Following
+              isFollowingOpened={isFollowingOpened}
+              setIsFollowingOpened={setIsFollowingOpened}
+              userId={user._id}
+              theme={theme}
+            />
+            <Followers
+              isFollowersOpened={isFollowersOpened}
+              setIsFollowersOpened={setIsFollowersOpened}
+              userId={user._id}
               theme={theme}
             />
           </>

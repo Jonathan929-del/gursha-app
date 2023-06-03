@@ -154,16 +154,14 @@ const Post = ({post, playingVideoId, isVideoPlaying, setIsVideoPlaying, theme, s
                                     </View>
                                 )}
                                 <View style={styles.itemContainer}>
-                                    {user ? (
-                                        <TouchableOpacity onPress={likeHandler}>
-                                            <AntDesign name="heart" size={40} color={user ? isLiked ? '#f00' : '#fff' : '#ffffff80'} />
-                                        </TouchableOpacity>
-                                    ) : (
-                                        <View>
-                                            <AntDesign name="heart" size={40} color={user ? isLiked ? '#f00' : '#fff' : '#ffffff80'} />
-                                        </View>
-                                    )}
-                                    <Text style={styles.number}>{likesCount}</Text>
+                                    {user &&
+                                        <>
+                                            <TouchableOpacity onPress={likeHandler}>
+                                                <AntDesign name="heart" size={40} color={user ? isLiked ? '#f00' : '#fff' : '#ffffff80'} />
+                                            </TouchableOpacity>
+                                            <Text style={styles.number}>{likesCount}</Text>
+                                        </>
+                                    }
                                 </View>
                                 <View style={[styles.itemContainer, {marginTop:10}]}>
                                     <TouchableOpacity onPress={() => setIsCommentsOpened(true)}>
