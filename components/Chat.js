@@ -19,9 +19,9 @@ const Chat = ({isChatOpened, setIsChatOpened, searchedUser, theme, setIsUserSear
   const [messages, setMessages] = useState([{}]);
   const [input, setInput] = useState('');
   const {user:registeredUser} = useContext(AuthContext);
-  const combinedId = registeredUser._id > searchedUser._id
-  ? registeredUser._id + searchedUser._id
-  : searchedUser._id + registeredUser._id;
+  const combinedId = registeredUser?._id > searchedUser._id
+  ? registeredUser?._id + searchedUser._id
+  : searchedUser._id + registeredUser?._id;
   const scrollViewRef = useRef();
 
 
@@ -34,7 +34,7 @@ const Chat = ({isChatOpened, setIsChatOpened, searchedUser, theme, setIsUserSear
         messages:arrayUnion({
           id:uuid.v4(),
           input,
-          senderId:registeredUser._id,
+          senderId:registeredUser?._id,
           timestamp:Timestamp.now()
         })
       });

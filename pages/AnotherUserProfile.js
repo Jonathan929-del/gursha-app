@@ -33,7 +33,7 @@ const AnotherUserProfile = ({isUserModalOpened, setIsUserModalOpened, user, them
     const [posts, setPosts] = useState([]);
     const postsFetcher = async () => {
         try {
-            const link = `${SERVER_API}/posts/${user._id}`;
+            const link = `${SERVER_API}/posts/${user?._id}`;
             const res = await axios.get(link);
             setPosts(res.data);
         } catch (err) {
@@ -49,7 +49,7 @@ const AnotherUserProfile = ({isUserModalOpened, setIsUserModalOpened, user, them
         try {
             setIsFollowIconVisible(!isFollowIconVisible);
             const link = `${SERVER_API}/users/follow/${user._id}`
-            const res = await axios.put(link, {followerId:registeredUser._id});
+            const res = await axios.put(link, {followerId:registeredUser?._id});
             setFollowersCount(res.data === 'User followed' ? followersCount + 1 : followersCount - 1);
             update({newFollowing:user._id, bio:registeredUser.bio, profilePic:registeredUser.profilePic, isFollow:res.data === 'User followed' ? true : false});
         } catch (err) {
@@ -63,20 +63,20 @@ const AnotherUserProfile = ({isUserModalOpened, setIsUserModalOpened, user, them
     const [isChatOpened, setIsChatOpened] = useState(false);
     const chat = async () => {
         try {
-            const combinedId = registeredUser._id > user._id ? registeredUser._id + user._id : user._id + registeredUser._id;
+            const combinedId = registeredUser?._id > user?._id ? registeredUser?._id + user?._id : user?._id + registeredUser?._id;
             const res = await getDoc(doc(db, 'chats', combinedId));
             if(!res.exists()){
                 setDoc(doc(db, 'chats', combinedId), {messages:[]}).then(() => {
-                    updateDoc(doc(db, 'userChats', registeredUser._id), {
+                    updateDoc(doc(db, 'userChats', registeredUser?._id), {
                         [combinedId+'.userInfo']:{
-                            id:user._id,
+                            id:user?._id,
                             username:user.username
                         },
                         [combinedId+'.date']:serverTimestamp()
                     });
-                    updateDoc(doc(db, 'userChats', user._id), {
+                    updateDoc(doc(db, 'userChats', user?._id), {
                         [combinedId+'.userInfo']:{
-                            id:registeredUser._id,
+                            id:registeredUser?._id,
                             username:registeredUser.username
                         },
                         [combinedId+'.date']:serverTimestamp()
@@ -95,7 +95,7 @@ const AnotherUserProfile = ({isUserModalOpened, setIsUserModalOpened, user, them
     useEffect(() => {
         postsFetcher();
         setFollowersCount(user.followersCount);
-        setIsFollowIconVisible(registeredUser?.following?.includes(user._id) ? false : true);
+        setIsFollowIconVisible(registeredUser?.following?.includes(user?._id) ? false : true);
     }, [isUserModalOpened]);
 
 
@@ -113,13 +113,13 @@ const AnotherUserProfile = ({isUserModalOpened, setIsUserModalOpened, user, them
             <Following
               isFollowingOpened={isFollowingOpened}
               setIsFollowingOpened={setIsFollowingOpened}
-              userId={user._id}
+              userId={user?._id}
               theme={theme}
             />
             <Followers
               isFollowersOpened={isFollowersOpened}
               setIsFollowersOpened={setIsFollowersOpened}
-              userId={user._id}
+              userId={user?._id}
               theme={theme}
             />
             <View style={styles.container}>
