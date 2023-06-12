@@ -57,9 +57,9 @@ const UsersList = ({theme}) => {
         try {
             const combinedId =
             !id
-            ? registeredUser._id > searchedUser._id
-                ? registeredUser._id + searchedUser._id
-                : searchedUser._id + registeredUser._id
+            ? registeredUser._id > searchedUser?._id
+                ? registeredUser._id + searchedUser?._id
+                : searchedUser?._id + registeredUser._id
             : registeredUser._id > id
                 ? registeredUser._id + id
                 : id + registeredUser._id;
@@ -68,12 +68,12 @@ const UsersList = ({theme}) => {
                 setDoc(doc(db, 'chats', combinedId), {messages:[]}).then(() => {
                     updateDoc(doc(db, 'userChats', registeredUser._id), {
                         [combinedId+'.userInfo']:{
-                            id:id ? id : searchedUser._id,
-                            username:username ? username : searchedUser.username
+                            id:id ? id : searchedUser?._id,
+                            username:username ? username : searchedUser?.username
                         },
                         [combinedId+'.date']:serverTimestamp()
                     });
-                    updateDoc(doc(db, 'userChats', id ? id : searchedUser._id), {
+                    updateDoc(doc(db, 'userChats', id ? id : searchedUser?._id), {
                         [combinedId+'.userInfo']:{
                             id:registeredUser._id,
                             username:registeredUser.username
@@ -95,7 +95,7 @@ const UsersList = ({theme}) => {
     const fetchUsers = () => {        
         onSnapshot(doc(db, 'userChats', registeredUser._id), doc => {
             let urls = [];
-            const docs = Object?.values(doc?.data());
+            const docs = doc?.data() ? Object?.values(doc?.data()) : [];
             setChats(docs);
             docs.map(u => {
                 urls.push(`${SERVER_API}/users/${u?.userInfo?.username}`);
@@ -165,14 +165,14 @@ const UsersList = ({theme}) => {
                 <TouchableOpacity style={styles.searchedUser} onPress={selectUser}>
                     {searchedUser?.profilePic ? (
                         <Image
-                            source={{uri:searchedUser.profilePic}}
+                            source={{uri:searchedUser?.profilePic}}
                             style={styles.image}
                         />
                     ) : (
                         <View style={[styles.image, {backgroundColor:'#fff'}]}/>
                     )}
                     <View style={styles.texts}>
-                        <Text style={styles.username}>{searchedUser.username}</Text>
+                        <Text style={styles.username}>{searchedUser?.username}</Text>
                     </View>
                 </TouchableOpacity>
             )}
