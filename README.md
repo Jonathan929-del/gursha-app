@@ -1,0 +1,1 @@
+This is a mobile app called "Gursha" created using React native, and it's a titktok clone app. Providing many featues like videos uploading using AWS S3 bucket, and firebase for live chat feature, a profile page to see your uploaded videos.
